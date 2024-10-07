@@ -12,7 +12,7 @@ namespace MonsterTradingCardGame_2024
         static void Main(string[] args)
         {
             HttpServer server = new HttpServer();
-            server.Start();
+            server.Run();
         }
     }
 }
