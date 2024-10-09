@@ -48,5 +48,5 @@ namespace MonsterTradingCardGame_2024.Http
 
             Console.WriteLine("========================================");
         }
-    }
-}
+    } // <- End of HttpProcessor class
+} // <- End of MonsterTradingCardGame_2024.Http namesspace

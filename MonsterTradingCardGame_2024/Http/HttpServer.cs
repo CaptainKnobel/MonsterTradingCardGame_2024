@@ -57,8 +57,8 @@ namespace MonsterTradingCardGame_2024.Http
         {
             Endpoints.Add(path, endpoint);
         }
-    }
-}
+    } // <- End of HttpServer class
+} // <- End of MonsterTradingCardGame_2024.Http namesspace
 
 /*
 

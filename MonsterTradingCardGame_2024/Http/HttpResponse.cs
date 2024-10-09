@@ -65,5 +65,5 @@ namespace MonsterTradingCardGame_2024.Http
         {
             Headers["Content-Type"] = "application/json";
         }
-    }
-}
+    } // <- End of HttpResponse class
+} // <- End of MonsterTradingCardGame_2024.Http namesspace

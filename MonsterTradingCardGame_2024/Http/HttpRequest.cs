@@ -92,5 +92,5 @@ namespace MonsterTradingCardGame_2024.Http
                 Console.WriteLine(data.ToString());
             }
         }
-    }
-}
+    } // <- End of HttpRequest class
+} // <- End of MonsterTradingCardGame_2024.Http namesspace
