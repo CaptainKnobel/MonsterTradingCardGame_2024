@@ -61,7 +61,6 @@ namespace MonsterTradingCardGame_2024.Http
 } // <- End of MonsterTradingCardGame_2024.Http namesspace
 
 /*
-
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -137,5 +136,4 @@ while (true)
 
     Console.WriteLine("========================================");
 }
-
 */

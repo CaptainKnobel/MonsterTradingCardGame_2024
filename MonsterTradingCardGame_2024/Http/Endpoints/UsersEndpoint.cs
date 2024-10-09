@@ -11,7 +11,7 @@ using MonsterTradingCardGame_2024.Models;
 
 namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
-    internal class UserEndpoint : IHttpEndpoint
+    internal class UsersEndpoint : IHttpEndpoint
     {
         // Handles HTTP POST requests for registering users
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
@@ -44,37 +44,8 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
                 return true;
             }
-            else if (rq.Method == HttpMethod.POST && rq.Path[1] == "sessions")
-            {
-                if (string.IsNullOrEmpty(rq.Content))
-                {
-                    rs.SetClientError("No content provided", 400);
-                    return true;
-                }
-
-                // Deserialize for login
-                var userData = JsonSerializer.Deserialize<User>(rq.Content);
-                if (userData == null || string.IsNullOrEmpty(userData.Username) || string.IsNullOrEmpty(userData.Password))
-                {
-                    rs.SetClientError("Invalid login data provided", 400);
-                    return true;
-                }
-
-                // Call the UserHandler to log the user in
-                string? token = UserHandler.LoginUser(userData.Username, userData.Password);
-                if (token != null)
-                {
-                    rs.SetSuccess("Login successful", 200);
-                    rs.Content = JsonSerializer.Serialize(new { Token = token });
-                }
-                else
-                {
-                    rs.SetClientError("Login failed", 401); // Unauthorized
-                }
-                return true;
-            }
 
             return false; // Unhandled request
         }
-    } // <- End of UserEndpoint class
+    } // <- End of UsersEndpoint class
 } // <- End of MonsterTradingCardGame_2024.Http.Endpoints namesspace

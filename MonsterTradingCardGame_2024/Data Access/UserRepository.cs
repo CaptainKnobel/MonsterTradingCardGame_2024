@@ -8,38 +8,16 @@ using Npgsql;
 
 namespace MonsterTradingCardGame_2024.Data_Access
 {
-    internal class UserRepository
+    internal static class UserRepository
     {
 
         // Dummy storage for users (in-memory list)
         private static List<User> users = new List<User>
         {
-            //new User(1, "kienboec", "daniel", 20, 100, "kienboec-mtcgToken"),
-            //new User(2, "altenhof", "markus", 20, 100, "altenhof-mtcgToken"),
-            //new User(3, "admin", "istrator", 20, 100, "admin-mtcgToken")
+            //new User(1, "kienboec", "daniel", 20, "kienboec-mtcgToken", 100, 5, 3),
+            //new User(2, "altenhof", "markus", 20, "altenhof-mtcgToken", 120, 6, 2),
+            //new User(3, "admin", "istrator", 20, "admin-mtcgToken", 150, 10, 1)
         };
-
-        // Register a new user
-        public static bool Register(string username, string password)
-        {
-            // Check if the user already exists
-            if (users.Any(u => u.Username == username))
-            {
-                return false;  // User already exists
-            }
-
-            // Create new user with a new ID and generate a token
-            int newId = users.Max(u => u.Id) + 1; // Explanation:  users ... the list of users // .Max() ... a LINQ (Language Integrated Query) Method to find the largest value // u => u.Id ... a Lambda-expression, here for every user, we call "u", the Id is chosen, which we use for comparison // +1 ... then we add 1 to get a higher Id (so we're counting upwards with every new user) // and then we save that as int newId
-            User newUser = new User(newId, username, password, 20, 100, GenerateToken(username));
-            users.Add(newUser);
-            return true;  // Registration successful
-        }
-
-        // Login an existing user
-        public static User? Login(string username, string password)
-        {
-            return users.FirstOrDefault(u => u.Username == username && u.Password == password);
-        }
 
         // Generate a simple token for the user
         private static string GenerateToken(string username)
@@ -60,6 +38,40 @@ namespace MonsterTradingCardGame_2024.Data_Access
             }
         }
         */
+
+        // Register a new user
+        public static bool Register(string username, string password)
+        {
+            // Check if the user already exists
+            if (users.Any(u => u.Username == username))
+            {
+                return false;  // User already exists
+            }
+
+            // Create new user with a new ID and generate a token
+            int newId = users.Any() ? users.Max(u => u.Id) + 1 : 1; // Explanation:  users ... the list of users // .Max() ... a LINQ (Language Integrated Query) Method to find the largest value // u => u.Id ... a Lambda-expression, here for every user, we call "u", the Id is chosen, which we use for comparison // +1 ... then we add 1 to get a higher Id (so we're counting upwards with every new user) // and then we save that as int newId
+            User newUser = new User(newId, username, password, 20, GenerateToken(username), 100, 0, 0);
+            users.Add(newUser);
+            return true;  // Registration successful
+        }
+
+        // Login an existing user
+        public static User? Login(string username, string password)
+        {
+            return users.FirstOrDefault(u => u.Username == username && u.Password == password);
+        }
+
+        // Find a user by their token
+        public static User? GetUserByToken(string token)
+        {
+            return users.FirstOrDefault(u => u.Token == token);
+        }
+
+        // Fetch all users (for scoreboard purposes)
+        public static List<User> GetAllUsers()
+        {
+            return users;
+        }
 
     } // <- End of UserRepository class
 } // <- End of MonsterTradingCardGame_2024.Data_Access namesspace

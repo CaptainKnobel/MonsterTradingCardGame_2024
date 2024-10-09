@@ -18,21 +18,21 @@ namespace MonsterTradingCardGame_2024.Models
             this.Username = username;
             this.Password = password;
             this.Coins = 20;                // Every user starts with 20 coins
-            this.Elo = 100;                 // Start ELO is 100 points
-            this.Stack = new List<Card>();  // Collection of all the user's cards (stack)
-            this.Deck = new List<Card>();   // Deck (the user's best 4 cards for battle)
+            this.Stack = new CardStack();   // Collection of all the user's cards (stack)
+            this.Deck = new CardDeck();     // Deck (the user's best 4 cards for battle)
+            this.Stats = new UserStats();   // Default stats with initial values
         }
         // Constructor for loading a user from the database (with all attributes)
-        public User(int id, string username, string password, int coins, int elo, string token)
+        public User(int id, string username, string password, int coins, string token, int elo, int wins, int losses)
         {
             this.Id = id;
             this.Username = username;
             this.Password = password;
             this.Coins = coins;
-            this.Elo = elo;
             this.Token = token;
-            this.Stack = new List<Card>();  // Stack of all cards the user owns
-            this.Deck = new List<Card>();   // Best 4 cards selected by the user for battles
+            this.Stack = new CardStack();   // Stack of all cards the user owns
+            this.Deck = new CardDeck();     // Best 4 cards selected by the user for battles
+            this.Stats = new UserStats(elo, wins, losses);
         }
 
         // ----------========== [Properties] ==========----------
@@ -48,25 +48,25 @@ namespace MonsterTradingCardGame_2024.Models
         // Number of virtual coins the user possesses
         public int Coins { get; set; }
 
-        // ELO score for matchmaking and leaderboard
-        public int Elo { get; set; }
-
-        // Collection of all cards the user owns (stack)
-        public List<Card> Stack { get; set; }
-
-        // The deck consisting of the 4 best cards for battles
-        public List<Card> Deck { get; set; }
-
         // Token for authentication
         public string? Token { get; set; } = string.Empty;
+
+        // Collection of all cards the user owns (stack)
+        public CardStack Stack { get; set; } = new CardStack();
+
+        // The deck consisting of the 4 best cards for battles
+        public CardDeck Deck { get; set; } = new CardDeck();
+
+        // Statistics of the player
+        public UserStats Stats { get; set; } = new UserStats();
 
         // ----------========== [Methods] ==========----------
         // Method to add a card to the deck
         public void AddCardToDeck(Card card)
         {
-            if (Deck.Count < 4)
+            if (Deck.Cards.Count < 4)
             {
-                Deck.Add(card);
+                Deck.AddCard(card);
             }
             else
             {
@@ -74,10 +74,21 @@ namespace MonsterTradingCardGame_2024.Models
             }
         }
 
+        public void RemoveCardFromDeck(Card card)
+        {
+            Deck.RemoveCard(card);
+        }
+
         // Method to add a card to the stack
         public void AddCardToStack(Card card)
         {
-            Stack.Add(card);
+            Stack.AddCard(card);
+        }
+
+        public void DrawCardFromStack()
+        {
+            Card card = Stack.DrawRandomCard();
+            // TODO: Mach was mit der gezogenen Karte...
         }
 
         // Method to spend coins (e.g. to buy card packages)
@@ -92,9 +103,17 @@ namespace MonsterTradingCardGame_2024.Models
         }
 
         // Method to update the ELO score after a battle
-        public void UpdateElo(int points)
+        public void UpdateElo(int points, bool won)
         {
-            Elo += points;
+            Stats.Elo += points;
+            if (won)
+            {
+                Stats.Wins += 1;
+            }
+            else
+            {
+                Stats.Losses += 1;
+            }
         }
     } // <- End of User class
 } // <- End of MonsterTradingCardGame_2024.Models namesspace
