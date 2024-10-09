@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace MonsterTradingCardGame_2024.Data_Access
 {
@@ -13,9 +14,9 @@ namespace MonsterTradingCardGame_2024.Data_Access
         // Dummy storage for users (in-memory list)
         private static List<User> users = new List<User>
         {
-            new User(1, "kienboec", "daniel", 20, 100, "kienboec-mtcgToken"),
-            new User(2, "altenhof", "markus", 20, 100, "altenhof-mtcgToken"),
-            new User(3, "admin", "istrator", 20, 100, "admin-mtcgToken")
+            //new User(1, "kienboec", "daniel", 20, 100, "kienboec-mtcgToken"),
+            //new User(2, "altenhof", "markus", 20, 100, "altenhof-mtcgToken"),
+            //new User(3, "admin", "istrator", 20, 100, "admin-mtcgToken")
         };
 
         // Register a new user
@@ -28,14 +29,14 @@ namespace MonsterTradingCardGame_2024.Data_Access
             }
 
             // Create new user with a new ID and generate a token
-            int newId = users.Max(u => u.Id) + 1;
+            int newId = users.Max(u => u.Id) + 1; // Explanation:  users ... the list of users // .Max() ... a LINQ (Language Integrated Query) Method to find the largest value // u => u.Id ... a Lambda-expression, here for every user, we call "u", the Id is chosen, which we use for comparison // +1 ... then we add 1 to get a higher Id (so we're counting upwards with every new user) // and then we save that as int newId
             User newUser = new User(newId, username, password, 20, 100, GenerateToken(username));
             users.Add(newUser);
             return true;  // Registration successful
         }
 
         // Login an existing user
-        public static User Login(string username, string password)
+        public static User? Login(string username, string password)
         {
             return users.FirstOrDefault(u => u.Username == username && u.Password == password);
         }
@@ -43,11 +44,10 @@ namespace MonsterTradingCardGame_2024.Data_Access
         // Generate a simple token for the user
         private static string GenerateToken(string username)
         {
-            return $"{username}-mtcgToken-{Guid.NewGuid().ToString().Substring(0, 10)}";
+            return $"{username}-mtcgToken";
         }
 
-        /*
-        // Method to generate a token for the user
+        /* // Alternate version of GenerateToken() that uses a SHA256 zu create a unique token. Doesn't work with the default CURL script.
         private string GenerateToken()
         {
             // Using SHA256 to generate a random token based on the username and a timestamp
@@ -60,5 +60,6 @@ namespace MonsterTradingCardGame_2024.Data_Access
             }
         }
         */
+
     } // <- End of UserRepository class
 } // <- End of MonsterTradingCardGame_2024.Data_Access namesspace

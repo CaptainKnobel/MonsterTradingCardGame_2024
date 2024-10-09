@@ -30,7 +30,7 @@ namespace MonsterTradingCardGame_2024.Models
             this.Password = password;
             this.Coins = coins;
             this.Elo = elo;
-            this.Token = token ?? throw new ArgumentNullException(nameof(token));   // Token must exist
+            this.Token = token;
             this.Stack = new List<Card>();  // Stack of all cards the user owns
             this.Deck = new List<Card>();   // Best 4 cards selected by the user for battles
         }
