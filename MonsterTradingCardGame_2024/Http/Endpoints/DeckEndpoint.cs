@@ -14,9 +14,9 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
         {
             if (rq.Method == HttpMethod.GET && rq.Path[1] == "deck")
             {
-                // Handle deck retrieval logic here
+                // Handle deck retrieval logic
                 // Retrieve user's deck and return it as a JSON response
-                string? token = rq.Headers["Authorization"].Split(' ')[1]; // Example logic to extract token
+                string? token = rq.Headers["Authorization"].Split(' ')[1];
                 var deck = UserHandler.GetDeckByToken(token);
 
                 rs.Content = JsonSerializer.Serialize(deck);
@@ -25,7 +25,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             }
             else if (rq.Method == HttpMethod.PUT && rq.Path[1] == "deck")
             {
-                // Handle deck update logic here
+                // TODO: Handle deck update logic here
                 rs.SetSuccess("Deck updated successfully", 200);
                 return true;
             }

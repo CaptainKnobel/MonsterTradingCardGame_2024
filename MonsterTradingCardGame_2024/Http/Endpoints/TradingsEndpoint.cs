@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MonsterTradingCardGame_2024.Models;
+using MonsterTradingCardGame_2024.Business_Logic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,16 +25,30 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             else if (rq.Method == HttpMethod.POST && rq.Path[1] == "tradings")
             {
                 // Handle the creation of a new trading deal
-                var newTrade = JsonSerializer.Deserialize<TradingDeal>(rq.Content);
-                bool success = TradingHandler.AddTrade(newTrade);
-
-                if (success)
+                if (string.IsNullOrWhiteSpace(rq.Content))
                 {
-                    rs.SetSuccess("Trade added successfully", 201);
+                    rs.SetClientError("Trade data is empty or invalid", 400);
+                    return true;
+                }
+
+                var newTrade = JsonSerializer.Deserialize<TradingDeal>(rq.Content);
+
+                if (newTrade != null) // Check if deserialization succeeded
+                {
+                    bool success = TradingHandler.AddTrade(newTrade);
+
+                    if (success)
+                    {
+                        rs.SetSuccess("Trade added successfully", 201);
+                    }
+                    else
+                    {
+                        rs.SetClientError("Trade creation failed", 400);
+                    }
                 }
                 else
                 {
-                    rs.SetClientError("Trade creation failed", 400);
+                    rs.SetClientError("Invalid trade data", 400);  // Handle null case for newTrade
                 }
                 return true;
             }

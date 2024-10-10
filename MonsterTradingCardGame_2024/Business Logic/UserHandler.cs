@@ -33,10 +33,23 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         }
 
         // Returns the user's deck based on the token
-        public static List<Card>? GetDeckByToken(string token)
+        public static List<Card> GetDeckByToken(string token)
         {
-            var user = FindUserByToken(token);
-            return user?.Deck.Cards;  // Returns null if user is not found
+            if(token != null)
+            {
+                var user = FindUserByToken(token);
+                if (user != null)
+                {
+                    // Check if the user's deck exists
+                    if (user.Deck != null)
+                    {
+                        // Return the user's cards
+                        return user.Deck.Cards;
+                    }
+                }
+            }
+            // Returns an empty Deck if anything went wrong above.
+            return new List<Card>();
         }
 
         // Returns the user's statistics (ELO, wins, losses)
