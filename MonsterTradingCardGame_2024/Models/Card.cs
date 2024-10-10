@@ -12,13 +12,15 @@ namespace MonsterTradingCardGame_2024.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public double Damage { get; set; }
+        public Element ElementType { get; set; }
         public CardType CardType { get; set; }
 
-        protected Card(string name, double damage, CardType cardType)
+        protected Card(string name, double damage, Element elementType, CardType cardType)
         {
             this.Id = Guid.NewGuid();
             this.Name = name;
             this.Damage = damage;
+            this.ElementType = elementType;
             this.CardType = cardType;
         }
     }
