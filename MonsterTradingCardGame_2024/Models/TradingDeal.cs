@@ -9,6 +9,15 @@ namespace MonsterTradingCardGame_2024.Models
 {
     internal class TradingDeal
     {
+        // Constructor for Serialization
+        public TradingDeal()
+        {
+            Id = "";
+            CardToTrade = "";
+            AcceptedElement = 0;
+            AcceptedSpecies = 0;
+            MinimumDamage = 0;
+        }
         // Constructor for creating a new trading deal
         public TradingDeal(string id, string cardToTrade, Element acceptedElement, Species acceptedSpecies, float minimumDamage)
         {

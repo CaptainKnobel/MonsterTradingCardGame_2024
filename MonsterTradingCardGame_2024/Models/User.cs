@@ -13,6 +13,17 @@ namespace MonsterTradingCardGame_2024.Models
     {
         // ----------========== [Constructors] ==========----------
         // Constructor for registration (username and password)
+        public User()
+        {
+            // Standardwerte setzen, um mögliche Null-Referenz-Probleme zu vermeiden
+            Username = string.Empty;
+            Password = string.Empty;
+            Token = string.Empty;
+            Coins = 20;
+            Stack = new CardStack();
+            Deck = new CardDeck();
+            Stats = new UserStats();
+        }
         public User(string username, string password)
         {
             this.Username = username;

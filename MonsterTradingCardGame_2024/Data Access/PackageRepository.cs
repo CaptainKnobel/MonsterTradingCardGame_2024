@@ -9,6 +9,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 {
     internal static class PackageRepository
     {
+        // TODO: switch to enums
         // Dummy storage for packages (in-memory list)
         private static List<CardPackage> packages = new List<CardPackage>
         {
