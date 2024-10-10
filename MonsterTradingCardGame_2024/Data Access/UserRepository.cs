@@ -49,7 +49,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             }
 
             // Create new user with a new ID and generate a token
-            int newId = users.Any() ? users.Max(u => u.Id) + 1 : 1; // Explanation:  users ... the list of users // .Max() ... a LINQ (Language Integrated Query) Method to find the largest value // u => u.Id ... a Lambda-expression, here for every user, we call "u", the Id is chosen, which we use for comparison // +1 ... then we add 1 to get a higher Id (so we're counting upwards with every new user) // and then we save that as int newId
+            int newId = users.Any() ? users.Max(u => u.Id) + 1 : 1;
             User newUser = new User(newId, username, password, 20, GenerateToken(username), 100, 0, 0);
             users.Add(newUser);
             return true;  // Registration successful

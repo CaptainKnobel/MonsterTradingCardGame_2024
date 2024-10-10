@@ -15,7 +15,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             if (rq.Method == HttpMethod.GET && rq.Path[1] == "stats")
             {
                 // Handle statistics retrieval logic here
-                string? token = rq.Headers["Authorization"].Split(' ')[1]; // Example logic to extract token
+                string? token = rq.Headers["Authorization"].Split(' ')[1];
                 var stats = UserHandler.GetStatsByToken(token);
 
                 rs.Content = JsonSerializer.Serialize(stats);

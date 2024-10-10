@@ -11,10 +11,10 @@ namespace MonsterTradingCardGame_2024.Models
     {
         public Species MonsterSpecies { get; set; }
 
-        public MonsterCard(string name, double damage, Element elementType, Species species)
+        public MonsterCard(string name, double damage, Element elementType, Species monsterSpecies)
             : base(name, damage, elementType, CardType.Monster)
         {
-            MonsterSpecies = species;
+            this.MonsterSpecies = monsterSpecies;
         }
     }
 }

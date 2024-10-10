@@ -13,6 +13,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
         // Dummy storage for packages (in-memory list)
         private static List<CardPackage> packages = new List<CardPackage>
         {
+            /*
             new CardPackage(new List<Card>
             {
                 new MonsterCard("Dragon", 50.0, Element.Fire, Species.Dragon),
@@ -29,6 +30,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 new MonsterCard("Ork", 45.0, Element.Normal, Species.Ork),
                 new SpellCard("RegularSpell", 20.0, Element.Normal)
             })
+            */
         };
 
         // Retrieve an available package (if any exists)
