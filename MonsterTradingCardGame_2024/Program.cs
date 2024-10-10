@@ -55,9 +55,9 @@ namespace MonsterTradingCardGame_2024
 /* 
  * Docker container erstellen (first time):
  * docker run -d --rm --name postgresdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v pgdata:/var/lib/postgresql/data postgres
- * oder
+ * oder besser:
  * docker run --name mtcgdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v pgdata:/var/lib/postgresql/data postgres
- * weil -rm löscht und blockiert die konsole
+ * weil -d blockiert die konsole, -rm löscht die datenbank danach, deswegen ist das nicht drin
  * 
  * Danach:
  * docker start postgresdb
