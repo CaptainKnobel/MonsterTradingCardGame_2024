@@ -17,7 +17,6 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             {
                 // Handle retrieval of trading deals
                 var trades = TradingHandler.GetAllTrades();
-
                 rs.Content = JsonSerializer.Serialize(trades);
                 rs.SetSuccess("Trades retrieved successfully", 200);
                 return true;
@@ -48,7 +47,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
                 else
                 {
-                    rs.SetClientError("Invalid trade data", 400);  // Handle null case for newTrade
+                    rs.SetClientError("Invalid trade data", 400);
                 }
                 return true;
             }

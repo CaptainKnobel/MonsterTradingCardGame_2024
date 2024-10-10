@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonsterTradingCardGame_2024.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,10 @@ namespace MonsterTradingCardGame_2024.Models
 {
     internal class SpellCard : Card
     {
-        public string ElementType { get; set; } // fire, water, normal
+        public Element ElementType { get; set; }
 
-        public SpellCard(string name, double damage, string elementType)
-            : base(name, damage)
+        public SpellCard(string name, double damage, Element elementType)
+            : base(name, damage, CardType.Spell)
         {
             ElementType = elementType;
         }

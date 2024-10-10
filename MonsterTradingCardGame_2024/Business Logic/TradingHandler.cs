@@ -20,7 +20,6 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         // Add a new trade
         public static bool AddTrade(TradingDeal newTrade)
         {
-            // Check if the trade is valid (e.g., card not already in the deck)
             if (newTrade != null && !tradingDeals.Any(t => t.Id == newTrade.Id))
             {
                 tradingDeals.Add(newTrade);

@@ -1,4 +1,5 @@
-﻿using MonsterTradingCardGame_2024.Models;
+﻿using MonsterTradingCardGame_2024.Enums;
+using MonsterTradingCardGame_2024.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,25 +10,24 @@ namespace MonsterTradingCardGame_2024.Data_Access
 {
     internal static class PackageRepository
     {
-        // TODO: switch to enums
         // Dummy storage for packages (in-memory list)
         private static List<CardPackage> packages = new List<CardPackage>
         {
             new CardPackage(new List<Card>
             {
-                new MonsterCard("Dragon", 50.0, "fire"),
-                new SpellCard("FireSpell", 30.0, "fire"),
-                new MonsterCard("WaterGoblin", 10.0, "water"),
-                new MonsterCard("Ork", 40.0, "normal"),
-                new SpellCard("RegularSpell", 20.0, "normal")
+                new MonsterCard("Dragon", 50.0, Element.Fire, Species.Dragon),
+                new SpellCard("FireSpell", 30.0, Element.Fire),
+                new MonsterCard("WaterGoblin", 10.0, Element.Water, Species.Goblin),
+                new MonsterCard("Ork", 40.0, Element.Normal, Species.Ork),
+                new SpellCard("RegularSpell", 20.0, Element.Normal)
             }),
             new CardPackage(new List<Card>
             {
-                new MonsterCard("WaterGoblin", 10.0, "water"),
-                new MonsterCard("Dragon", 50.0, "fire"),
-                new SpellCard("FireSpell", 25.0, "fire"),
-                new MonsterCard("Ork", 45.0, "normal"),
-                new SpellCard("RegularSpell", 20.0, "normal")
+                new MonsterCard("WaterGoblin", 10.0, Element.Water, Species.Goblin),
+                new MonsterCard("Dragon", 50.0, Element.Fire, Species.Dragon),
+                new SpellCard("FireSpell", 25.0, Element.Fire),
+                new MonsterCard("Ork", 45.0, Element.Normal, Species.Ork),
+                new SpellCard("RegularSpell", 20.0, Element.Normal)
             })
         };
 

@@ -12,14 +12,14 @@ namespace MonsterTradingCardGame_2024.Models
         // Constructor for Serialization
         public TradingDeal()
         {
-            Id = "";
-            CardToTrade = "";
-            AcceptedElement = 0;
-            AcceptedSpecies = 0;
+            Id = Guid.NewGuid().ToString();
+            CardToTrade = null; // Null by default
+            AcceptedElement = Element.Normal;
+            AcceptedSpecies = Species.Goblin;
             MinimumDamage = 0;
         }
         // Constructor for creating a new trading deal
-        public TradingDeal(string id, string cardToTrade, Element acceptedElement, Species acceptedSpecies, float minimumDamage)
+        public TradingDeal(string id, Card cardToTrade, Element acceptedElement, Species acceptedSpecies, float minimumDamage)
         {
             Id = id;
             CardToTrade = cardToTrade;
@@ -32,7 +32,7 @@ namespace MonsterTradingCardGame_2024.Models
         public string Id { get; set; }
 
         // The card being offered for trade
-        public string CardToTrade { get; set; }
+        public Card? CardToTrade { get; set; }
 
         // The element of the card the user is willing to accept
         public Element AcceptedElement { get; set; }

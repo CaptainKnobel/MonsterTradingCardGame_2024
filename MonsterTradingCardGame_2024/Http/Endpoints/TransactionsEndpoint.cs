@@ -1,4 +1,5 @@
 ﻿using MonsterTradingCardGame_2024.Business_Logic;
+using MonsterTradingCardGame_2024.Data_Access;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 // Check for valid authorization token
                 if (!rq.Headers.ContainsKey("Authorization") || !rq.Headers["Authorization"].StartsWith("Bearer "))
                 {
-                    rs.SetClientError("Unauthorized", 401);
+                    rs.SetClientError("Unauthorized - Missing or invalid token", 401);
                     return true;
                 }
 
@@ -32,7 +33,15 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
                 else
                 {
-                    rs.SetClientError("Not enough money or no packages available", 400);
+                    // Better error differentiation
+                    if (PackageRepository.GetAvailablePackageCount() == 0)
+                    {
+                        rs.SetClientError("No packages available for purchase", 400);
+                    }
+                    else
+                    {
+                        rs.SetClientError("Not enough money to buy the package", 400);
+                    }
                 }
                 return true;
             }
