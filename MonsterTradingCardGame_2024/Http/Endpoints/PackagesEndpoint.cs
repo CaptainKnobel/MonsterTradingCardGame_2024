@@ -1,9 +1,11 @@
 ﻿using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.JsonConverters;
 using MonsterTradingCardGame_2024.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -27,7 +29,11 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new CardConverter());    // Register converter
 
-                var package = JsonSerializer.Deserialize<CardPackage>(rq.Content);
+                // so sollte es funzen <---- ----> TODO: beim serializen -- nur card schicken?
+                var options2 = new JsonSerializerSettings();
+                options2.TypeNameHandling = TypeNameHandling.Auto;
+
+                var package = JsonConvert.DeserializeObject<CardPackage>(rq.Content);
 
                 if (package != null && PackageRepository.AddPackage(package))
                 {

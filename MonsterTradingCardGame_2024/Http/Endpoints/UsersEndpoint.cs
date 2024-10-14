@@ -16,7 +16,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
         // Handles HTTP POST requests for registering users
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
-            if (rq.Method == HttpMethod.POST && rq.Path[1] == "users")
+            if (rq.Method == HttpMethod.POST)
             {
                 if (string.IsNullOrEmpty(rq.Content))
                 {

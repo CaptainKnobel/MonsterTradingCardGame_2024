@@ -71,7 +71,7 @@ namespace MonsterTradingCardGame_2024.Models
         // Statistics of the player
         public UserStats Stats { get; set; } = new UserStats();
 
-        // ----------========== [Methods] ==========----------
+        // ----------========== [Methods] ==========---------- // TODO: funktionen in business logik verschieben
         // Method to add a card to the deck
         public void AddCardToDeck(Card card)
         {
