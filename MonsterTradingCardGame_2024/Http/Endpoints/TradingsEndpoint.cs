@@ -13,6 +13,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
     {
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
+            /*
             if (rq.Method == HttpMethod.GET && rq.Path[1] == "tradings")
             {
                 // Handle retrieval of trading deals
@@ -66,7 +67,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
                 return true;
             }
-
+            */
             return false;
         }
     }

@@ -12,27 +12,28 @@ namespace MonsterTradingCardGame_2024.JsonConverters
 {
     internal class CardConverter : JsonConverter<Card>
     {
-        public override Card Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override Card? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var jsonDoc = JsonDocument.ParseValue(ref reader);
             var rootElement = jsonDoc.RootElement;
 
-            // Determine the card type from the JSON data
+            // Check the CardType to distinguish between MonsterCard and SpellCard
             var cardType = (CardType)rootElement.GetProperty("CardType").GetInt32();
+
+            string name = rootElement.GetProperty("Name").GetString() ?? "";
+            double damage = rootElement.GetProperty("Damage").GetDouble();
+            Element elementType = (Element)rootElement.GetProperty("ElementType").GetInt32();
 
             switch (cardType)
             {
                 case CardType.Monster:
-                    var monsterCard = JsonSerializer.Deserialize<MonsterCard>(rootElement.GetRawText(), options);
-                    if (monsterCard == null)
-                        throw new JsonException("Failed to deserialize MonsterCard.");
-                    return monsterCard;
+                    // Deserialize MonsterCard (which has additional MonsterSpecies)
+                    Species monsterSpecies = (Species)rootElement.GetProperty("MonsterSpecies").GetInt32();
+                    return new MonsterCard(name, damage, elementType, monsterSpecies);
 
                 case CardType.Spell:
-                    var spellCard = JsonSerializer.Deserialize<SpellCard>(rootElement.GetRawText(), options);
-                    if (spellCard == null)
-                        throw new JsonException("Failed to deserialize SpellCard.");
-                    return spellCard;
+                    // Deserialize SpellCard
+                    return new SpellCard(name, damage, elementType);
 
                 default:
                     throw new JsonException("Unknown card type.");
@@ -41,7 +42,6 @@ namespace MonsterTradingCardGame_2024.JsonConverters
 
         public override void Write(Utf8JsonWriter writer, Card value, JsonSerializerOptions options)
         {
-            // Serialize the card based on its actual type
             if (value is MonsterCard monsterCard)
             {
                 JsonSerializer.Serialize(writer, monsterCard, options);
