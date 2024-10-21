@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterTradingCardGame_2024", "MonsterTradingCardGame_2024\MonsterTradingCardGame_2024.csproj", "{9DC7FAA2-CD87-47D5-983B-0F24819F43EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterTradingCardGame_2024", "MonsterTradingCardGame_2024\MonsterTradingCardGame_2024.csproj", "{9DC7FAA2-CD87-47D5-983B-0F24819F43EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterTradingCardGame_2024.Test", "MonsterTradingCardGame_2024.Test\MonsterTradingCardGame_2024.Test.csproj", "{C545AF9B-F5AF-49EC-AB29-B191A7EC8612}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{9DC7FAA2-CD87-47D5-983B-0F24819F43EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DC7FAA2-CD87-47D5-983B-0F24819F43EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DC7FAA2-CD87-47D5-983B-0F24819F43EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C545AF9B-F5AF-49EC-AB29-B191A7EC8612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C545AF9B-F5AF-49EC-AB29-B191A7EC8612}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C545AF9B-F5AF-49EC-AB29-B191A7EC8612}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C545AF9B-F5AF-49EC-AB29-B191A7EC8612}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿using MonsterTradingCardGame_2024.Data_Access;
-using MonsterTradingCardGame_2024.JsonConverters;
 using MonsterTradingCardGame_2024.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +14,8 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
     {
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
-            if (rq.Method == HttpMethod.POST && rq.Path[1] == "packages")
+            if (rq.Method == HttpMethod.POST)
             {
-                /*
                 // Admin should be able to add packages
                 if (string.IsNullOrWhiteSpace(rq.Content))
                 {
@@ -25,41 +24,37 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
 
                 // Create the JsonSerializerOptions and add the converter
-                var options = new JsonSerializerOptions();
-                options.Converters.Add(new CardConverter());    // Register converter
+                var options = new JsonSerializerSettings();
+                options.TypeNameHandling = TypeNameHandling.Auto;
 
                 try
                 {
                     // Deserialize the content into a list of Card objects
-                    var cards = JsonSerializer.Deserialize<List<Card>>(rq.Content, options);
+                    var package = JsonConvert.DeserializeObject<CardPackage>(rq.Content);
 
-                    if (cards == null || cards.Count != 5)  // Ensure exactly 5 cards
+                    if (package == null)  // Ensure exactly 5 cards
+                    {
+                        rs.SetClientError("Failed to create package", 400);
+                        return true;
+                    }
+                    if(package.Cards.Count != 5)
                     {
                         rs.SetClientError("A package must contain exactly 5 cards", 400);
                         return true;
                     }
-
-                    // Create a new CardPackage with the list of cards
-                    var package = new CardPackage(cards);
 
                     // Add the package to the repository
                     if (PackageRepository.AddPackage(package))
                     {
                         rs.SetSuccess("Package created successfully", 201);
                     }
-                    else
-                    {
-                        rs.SetClientError("Failed to create package", 400);
-                    }
                 }
-                catch (JsonException ex)
+                catch (Newtonsoft.Json.JsonException ex)
                 {
                     rs.SetClientError($"Failed to deserialize package: {ex.Message}", 400);
                 }
-                */
                 return true;
             }
-
             return false;
         }
     }
