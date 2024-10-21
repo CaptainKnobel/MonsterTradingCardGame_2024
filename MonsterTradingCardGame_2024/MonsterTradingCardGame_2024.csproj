@@ -18,4 +18,8 @@
     <Folder Include="Data Access\DB Initialization\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MonsterTradingCardGame_2024.Test\MonsterTradingCardGame_2024.Test.csproj" />
+  </ItemGroup>
+
 </Project>
