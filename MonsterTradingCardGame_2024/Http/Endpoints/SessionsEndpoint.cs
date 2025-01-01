@@ -11,6 +11,12 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
     internal class SessionsEndpoint : IHttpEndpoint
     {
+        private readonly UserHandler _userHandler;
+        public SessionsEndpoint(UserHandler userHandler)
+        {
+            _userHandler = userHandler;
+        }
+
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
             if (rq.Method == HttpMethod.POST && rq.Path[1] == "sessions")
@@ -30,7 +36,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
 
                 // Call the UserHandler to log the user in
-                string? token = UserHandler.LoginUser(userData.Username, userData.Password);
+                string? token = _userHandler.LoginUser(userData.Username, userData.Password);
                 if (token != null)
                 {
                     rs.SetSuccess("Login successful", 200);

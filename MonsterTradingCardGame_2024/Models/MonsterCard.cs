@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Models
 {
-    internal class MonsterCard : Card
+    public class MonsterCard : Card
     {
         public Species MonsterSpecies { get; set; }
 
-        public MonsterCard(string name, double damage, Element elementType, Species monsterSpecies)
-            : base(name, damage, elementType, CardType.Monster)
+        public MonsterCard(string name, double damage, Element elementType, Species monsterSpecies, int ownerId = 0)
+            : base(name, damage, elementType, CardType.Monster, ownerId)
         {
             this.MonsterSpecies = monsterSpecies;
         }

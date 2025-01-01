@@ -8,14 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data Access\DB Initialization\**" />
+    <EmbeddedResource Remove="Data Access\DB Initialization\**" />
+    <None Remove="Data Access\DB Initialization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql" Version="8.0.5" />
     <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data Access\DB Initialization\" />
   </ItemGroup>
 
 </Project>

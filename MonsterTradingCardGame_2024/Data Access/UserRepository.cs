@@ -1,26 +1,23 @@
 ﻿using MonsterTradingCardGame_2024.Models;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Npgsql;
 
 namespace MonsterTradingCardGame_2024.Data_Access
 {
-    internal static class UserRepository
+    public class UserRepository : IUserRepository
     {
-
-        // Dummy storage for users (in-memory list)
-        private static List<User> users = new List<User>
+        private readonly string _connectionString;
+        public UserRepository(string connectionString)
         {
-            //new User(1, "kienboec", "daniel", 20, "kienboec-mtcgToken", 100, 5, 3),
-            //new User(2, "altenhof", "markus", 20, "altenhof-mtcgToken", 120, 6, 2),
-            //new User(3, "admin", "istrator", 20, "admin-mtcgToken", 150, 10, 1)
-        };
+            _connectionString = connectionString;
+        }
 
         // Generate a simple token for the user
-        private static string GenerateToken(string username)
+        private string GenerateToken(string username)
         {
             return $"{username}-mtcgToken";
         }
@@ -40,36 +37,140 @@ namespace MonsterTradingCardGame_2024.Data_Access
         */
 
         // Register a new user
-        public static bool Register(string username, string password)
+        public bool Register(string username, string password)
         {
-            // Check if the user already exists
-            if (users.Any(u => u.Username == username))
+            using (var connection = new NpgsqlConnection(_connectionString))
             {
-                return false;  // User already exists
-            }
+                connection.Open();
 
-            // Create new user with a new ID and generate a token
-            int newId = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-            User newUser = new User(newId, username, password, 20, GenerateToken(username), 100, 0, 0);
-            users.Add(newUser);
-            return true;  // Registration successful
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        INSERT INTO Users (Username, Password, Token)
+                        VALUES (@username, @password, @token)";
+                    command.Parameters.AddWithValue("username", username);
+                    command.Parameters.AddWithValue("password", password);
+                    command.Parameters.AddWithValue("token", GenerateToken(username));
+
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                    catch (PostgresException)
+                    {
+                        return false;   // In case the User already exists, catch the error and return false.
+                    }
+                }
+            }
         }
 
-        // Login an existing user
-        public static User? Login(string username, string password)
+        public User? Login(string username, string password)
         {
-            return users.FirstOrDefault(u => u.Username == username && u.Password == password);
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses
+                        FROM Users
+                        WHERE Username = @username AND Password = @password";
+                    command.Parameters.AddWithValue("username", username);
+                    command.Parameters.AddWithValue("password", password);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User(
+                                reader.GetInt32(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetInt32(3),
+                                reader.GetString(4),
+                                reader.GetInt32(5),
+                                reader.GetInt32(6),
+                                reader.GetInt32(7)
+                            );
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         // Find a user by their token
-        public static User? GetUserByToken(string token)
+        public User? GetUserByToken(string token)
         {
-            return users.FirstOrDefault(u => u.Token == token);
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses
+                        FROM Users
+                        WHERE Token = @token";
+                    command.Parameters.AddWithValue("token", token);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User(
+                                reader.GetInt32(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetInt32(3),
+                                reader.GetString(4),
+                                reader.GetInt32(5),
+                                reader.GetInt32(6),
+                                reader.GetInt32(7)
+                            );
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         // Fetch all users (for scoreboard purposes)
-        public static List<User> GetAllUsers()
+        public List<User> GetAllUsers()
         {
+            var users = new List<User>();
+
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses
+                        FROM Users";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            users.Add(new User(
+                                reader.GetInt32(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetInt32(3),
+                                reader.GetString(4),
+                                reader.GetInt32(5),
+                                reader.GetInt32(6),
+                                reader.GetInt32(7)
+                            ));
+                        }
+                    }
+                }
+            }
+
             return users;
         }
 

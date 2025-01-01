@@ -1,5 +1,6 @@
 ﻿using MonsterTradingCardGame_2024.Enums;
 using MonsterTradingCardGame_2024.Models;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,58 +9,142 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Data_Access
 {
-    internal static class PackageRepository
+    internal class PackageRepository : IPackageRepository
     {
-        // Dummy storage for packages (in-memory list)
-        private static List<CardPackage> packages = new List<CardPackage>
+        private readonly string _connectionString;
+        public PackageRepository(string connectionString)
         {
-            /*
-            new CardPackage(new List<Card>
-            {
-                new MonsterCard("Dragon", 50.0, Element.Fire, Species.Dragon),
-                new SpellCard("FireSpell", 30.0, Element.Fire),
-                new MonsterCard("WaterGoblin", 10.0, Element.Water, Species.Goblin),
-                new MonsterCard("Ork", 40.0, Element.Normal, Species.Ork),
-                new SpellCard("RegularSpell", 20.0, Element.Normal)
-            }),
-            new CardPackage(new List<Card>
-            {
-                new MonsterCard("WaterGoblin", 10.0, Element.Water, Species.Goblin),
-                new MonsterCard("Dragon", 50.0, Element.Fire, Species.Dragon),
-                new SpellCard("FireSpell", 25.0, Element.Fire),
-                new MonsterCard("Ork", 45.0, Element.Normal, Species.Ork),
-                new SpellCard("RegularSpell", 20.0, Element.Normal)
-            })
-            */
-        };
+            _connectionString = connectionString;
+        }
+
 
         // Retrieve an available package (if any exists)
-        public static CardPackage? GetAvailablePackage()
+        public CardPackage? GetAvailablePackage()
         {
-            if (packages.Any())
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT Id, CardIds FROM Packages LIMIT 1;";  // Get the first available package
+
+            using var reader = command.ExecuteReader(); 
+            if (reader.Read())
             {
-                var package = packages.First();  // Get the first available package
-                packages.Remove(package);        // Remove it from the available list
-                return package;
+                var packageId = reader.GetInt32(0);
+                var cardIds = reader.GetFieldValue<Guid[]>(1);
+
+                var cards = GetCardsByIds(cardIds);
+                DeletePackageById(packageId);   // Remove it from the available list
+                return new CardPackage(cards);
             }
+
             return null;  // No packages available
         }
 
         // Add a new package to the repository (for "admin" usage)
-        public static bool AddPackage(CardPackage package)
+        public bool AddPackage(CardPackage package)
         {
-            if (package.Cards.Count == 5)  // A package must have exactly 5 cards
+            // TODO: A package must have exactly 5 cards
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+            try
             {
-                packages.Add(package);
+                foreach (var card in package.Cards)
+                {
+                    AddCard(card, connection);
+                }
+
+                var cardIds = package.Cards.Select(card => card.Id).ToArray();
+                using var command = connection.CreateCommand();
+                command.CommandText = "INSERT INTO Packages (CardIds) VALUES (@CardIds);";
+                command.Parameters.AddWithValue("@CardIds", cardIds);
+
+                command.ExecuteNonQuery();
+                transaction.Commit();
                 return true;
             }
-            return false;
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
 
         // Check how many packages are available
-        public static int GetAvailablePackageCount()
+        public int GetAvailablePackageCount()
         {
-            return packages.Count;
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT COUNT(*) FROM Packages;";
+
+            return Convert.ToInt32(command.ExecuteScalar());
         }
+
+        private void AddCard(Card card, NpgsqlConnection connection)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType)
+                VALUES (@Id, @Name, @Damage, @ElementType, @CardType)
+                ON CONFLICT (Id) DO NOTHING;
+            ";
+            command.Parameters.AddWithValue("@Id", card.Id);
+            command.Parameters.AddWithValue("@Name", card.Name);
+            command.Parameters.AddWithValue("@Damage", card.Damage);
+            command.Parameters.AddWithValue("@ElementType", (int)card.ElementType);
+            command.Parameters.AddWithValue("@CardType", (int)card.CardType);
+
+            command.ExecuteNonQuery();
+        }
+
+        private List<Card> GetCardsByIds(Guid[] cardIds)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT Id, Name, Damage, ElementType, CardType FROM Cards WHERE Id = ANY(@CardIds);";
+            command.Parameters.AddWithValue("@CardIds", cardIds);
+
+            using var reader = command.ExecuteReader();
+            var cards = new List<Card>();
+            while (reader.Read())
+            {
+                var id = reader.GetGuid(0);
+                var name = reader.GetString(1);
+                var damage = reader.GetDouble(2);
+                var elementType = (Element)reader.GetInt32(3);
+                var cardType = (CardType)reader.GetInt32(4);
+
+                if (cardType == CardType.Monster)
+                {
+                    cards.Add(new MonsterCard(name, damage, elementType, Species.Dragon)); // Spezies anpassen
+                }
+                else
+                {
+                    cards.Add(new SpellCard(name, damage, elementType));
+                }
+            }
+
+            return cards;
+        }
+
+        private void DeletePackageById(int packageId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "DELETE FROM Packages WHERE Id = @Id;";
+            command.Parameters.AddWithValue("@Id", packageId);
+
+            command.ExecuteNonQuery();
+        }
+
     }
 }

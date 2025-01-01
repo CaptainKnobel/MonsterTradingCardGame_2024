@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Models
 {
-    internal class SpellCard : Card
+    public class SpellCard : Card
     {
 
-        public SpellCard(string name, double damage, Element elementType)
-            : base(name, damage, elementType, CardType.Spell)
+        public SpellCard(string name, double damage, Element elementType, int ownerId = 0)
+            : base(name, damage, elementType, CardType.Spell, ownerId)
         {
 
         }

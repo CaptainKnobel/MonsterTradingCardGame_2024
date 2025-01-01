@@ -11,29 +11,35 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Business_Logic
 {
-    internal static class UserHandler
+    internal class UserHandler
     {
-        // Register a new user through the repository
-        public static bool RegisterUser(string username, string password)
+        private readonly IUserRepository _userRepository;
+        public UserHandler(IUserRepository userRepository)
         {
-            return UserRepository.Register(username, password);
+            _userRepository = userRepository;
+        }
+
+        // Register a new user through the repository
+        public bool RegisterUser(string username, string password)
+        {
+            return _userRepository.Register(username, password);
         }
 
         // Validate user credentials for login
-        public static string? LoginUser(string username, string password)
+        public string? LoginUser(string username, string password)
         {
-            var user = UserRepository.Login(username, password);
+            var user = _userRepository.Login(username, password);
             return user?.Token;
         }
 
         // Find a user by their token
-        public static User? FindUserByToken(string token)
+        public User? FindUserByToken(string token)
         {
-            return UserRepository.GetUserByToken(token);
+            return _userRepository.GetUserByToken(token);
         }
 
         // Returns the user's deck based on the token
-        public static List<Card> GetDeckByToken(string token)
+        public List<Card> GetDeckByToken(string token)
         {
             if(token != null)
             {
@@ -53,30 +59,80 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         }
 
         // Returns the user's statistics (ELO, wins, losses)
-        public static UserStats? GetStatsByToken(string token)
+        public UserStats? GetStatsByToken(string token)
         {
             var user = FindUserByToken(token);
             return user?.Stats;  // Returns null if user is not found
         }
 
         // Fetches the scoreboard (list of users ordered by ELO)
-        public static List<UserStats> GetScoreboard()
+        public List<UserStats> GetScoreboard()
         {
-            return UserRepository.GetAllUsers()
+            return _userRepository.GetAllUsers()
                 .OrderByDescending(u => u.Stats.Elo)
                 .Select(u => u.Stats)
                 .ToList();
         }
 
         // Update a user's ELO score after a battle, along with win/loss records
-        public static void UpdateUserElo(string token, int points, bool won)
+        public void UpdateUserElo(string token, int points, bool won)
         {
             var user = FindUserByToken(token);
             if (user != null)
             {
-                user.UpdateElo(points, won);
+                user.Stats.Elo += points;
+                if (won)
+                {
+                    user.Stats.Wins++;
+                }
+                else
+                {
+                    user.Stats.Losses++;
+                }
+
+                // TODO: save in database
             }
         }
-        
+
+        public void AddCardToDeck(User user, Card card)
+        {
+            if (user.Deck.Cards.Count < 4)
+            {
+                user.Deck.AddCard(card);
+            }
+            else
+            {
+                throw new InvalidOperationException("The deck can only contain 4 cards.");
+            }
+        }
+
+        public void RemoveCardFromDeck(User user, Card card)
+        {
+            user.Deck.RemoveCard(card);
+        }
+
+        public void AddCardToStack(User user, Card card)
+        {
+            user.Stack.AddCard(card);
+        }
+
+        public Card DrawCardFromStack(User user)
+        {
+            return user.Stack.DrawRandomCard();
+        }
+
+        public bool SpendCoins(User user, int amount)
+        {
+            if(user.Coins < 5) // Check if user has enough coins. A package costs 5 coins.
+            {
+                if (user.Coins >= amount)
+                {
+                    user.Coins -= amount;
+                    return true;
+                }
+            }
+            return false;
+        }
+
     } // <- End of UserHandler class
 } // <- End of MonsterTradingCardGame_2024.Business_Logic namesspace

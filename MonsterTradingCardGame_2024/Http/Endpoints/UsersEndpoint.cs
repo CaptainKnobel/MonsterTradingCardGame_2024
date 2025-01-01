@@ -13,6 +13,13 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
     internal class UsersEndpoint : IHttpEndpoint
     {
+        private readonly UserHandler _userHandler;
+
+        public UsersEndpoint(UserHandler userHandler)
+        {
+            _userHandler = userHandler;
+        }
+
         // Handles HTTP POST requests for registering users
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
@@ -33,7 +40,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
 
                 // Call the UserHandler to register the user
-                bool registrationSuccess = UserHandler.RegisterUser(userData.Username, userData.Password);
+                bool registrationSuccess = _userHandler.RegisterUser(userData.Username, userData.Password);
                 if (registrationSuccess)
                 {
                     rs.SetSuccess("User created", 201);

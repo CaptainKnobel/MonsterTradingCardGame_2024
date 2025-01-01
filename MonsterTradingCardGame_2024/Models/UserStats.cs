@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Models
 {
-    internal class UserStats
+    public class UserStats
     {
         // Constructor for new User's Stats
         public UserStats()

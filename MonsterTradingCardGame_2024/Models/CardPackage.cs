@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Models
 {
-    internal class CardPackage
+    public class CardPackage
     {
         public List<Card> Cards { get; set; }
 

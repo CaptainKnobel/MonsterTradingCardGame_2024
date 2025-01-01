@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Models
 {
-    internal class TradingDeal
+    public class TradingDeal
     {
         // Constructor for Serialization
         public TradingDeal()

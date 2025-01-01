@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 
 namespace MonsterTradingCardGame_2024.Models
 {
-    internal class User
+    public class User
     {
         // ----------========== [Constructors] ==========----------
         // Constructor for registration (username and password)
@@ -71,60 +71,5 @@ namespace MonsterTradingCardGame_2024.Models
         // Statistics of the player
         public UserStats Stats { get; set; } = new UserStats();
 
-        // ----------========== [Methods] ==========----------
-        // Method to add a card to the deck
-        public void AddCardToDeck(Card card)
-        {
-            if (Deck.Cards.Count < 4)
-            {
-                Deck.AddCard(card);
-            }
-            else
-            {
-                throw new InvalidOperationException("The deck can only contain 4 cards.");
-            }
-        }
-
-        public void RemoveCardFromDeck(Card card)
-        {
-            Deck.RemoveCard(card);
-        }
-
-        // Method to add a card to the stack
-        public void AddCardToStack(Card card)
-        {
-            Stack.AddCard(card);
-        }
-
-        public void DrawCardFromStack()
-        {
-            Card card = Stack.DrawRandomCard();
-            // TODO: Mach was mit der gezogenen Karte...
-        }
-
-        // Method to spend coins (e.g. to buy card packages)
-        public bool SpendCoins(int amount)
-        {
-            if (Coins >= amount)
-            {
-                Coins -= amount;
-                return true;  // Successfully spent coins
-            }
-            return false;  // Not enough coins
-        }
-
-        // Method to update the ELO score after a battle
-        public void UpdateElo(int points, bool won)
-        {
-            Stats.Elo += points;
-            if (won)
-            {
-                Stats.Wins += 1;
-            }
-            else
-            {
-                Stats.Losses += 1;
-            }
-        }
     } // <- End of User class
 } // <- End of MonsterTradingCardGame_2024.Models namesspace

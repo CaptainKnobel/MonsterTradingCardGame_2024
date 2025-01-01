@@ -12,6 +12,13 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
     internal class PackagesEndpoint : IHttpEndpoint
     {
+        private readonly IPackageRepository _packageRepository;
+
+        public PackagesEndpoint(IPackageRepository packageRepository)
+        {
+            _packageRepository = packageRepository;
+        }
+
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
             if (rq.Method == HttpMethod.POST)
@@ -23,36 +30,44 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                     return true;
                 }
 
-                // Create the JsonSerializerOptions and add the converter
-                var options = new JsonSerializerSettings();
-                options.TypeNameHandling = TypeNameHandling.Auto;
-
                 try
                 {
-                    // Deserialize the content into a list of Card objects
-                    var package = JsonConvert.DeserializeObject<CardPackage>(rq.Content);
-
-                    if (package == null)  // Ensure exactly 5 cards
+                    // Deserialize the content into a CardPackage object
+                    var package = JsonConvert.DeserializeObject<CardPackage>(rq.Content, new JsonSerializerSettings
                     {
-                        rs.SetClientError("Failed to create package", 400);
-                        return true;
-                    }
-                    if(package.Cards.Count != 5)
+                        TypeNameHandling = TypeNameHandling.Auto
+                    });
+
+                    // Validate the package
+                    if (package == null || package.Cards.Count != 5)
                     {
                         rs.SetClientError("A package must contain exactly 5 cards", 400);
                         return true;
                     }
 
                     // Add the package to the repository
-                    if (PackageRepository.AddPackage(package))
+                    var repository = new PackageRepository("YourDatabaseConnectionString");
+
+                    if (repository.AddPackage(package))
                     {
                         rs.SetSuccess("Package created successfully", 201);
+                    }
+                    else
+                    {
+                        rs.SetServerError("Failed to save the package");
                     }
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
+                    // Catch deserialization errors
                     rs.SetClientError($"Failed to deserialize package: {ex.Message}", 400);
                 }
+                catch (Exception ex)
+                {
+                    // Catch unexpected errors
+                    rs.SetServerError($"An unexpected error occurred: {ex.Message}");
+                }
+
                 return true;
             }
             return false;
