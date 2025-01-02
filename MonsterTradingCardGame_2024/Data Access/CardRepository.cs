@@ -25,7 +25,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Id, Name, Damage, ElementType, CardType, OwnerId
+                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId
                 FROM Cards
                 WHERE OwnerId = @UserId
             ";
@@ -39,12 +39,13 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var name = reader.GetString(1);
                 var damage = reader.GetDouble(2);
                 var elementType = (Element)reader.GetInt32(3);
-                var cardType = (CardType)reader.GetInt32(4);
-                var ownerId = reader.GetInt32(5);
+                var cardType = (CardType)reader.GetInt32(5);
+                var ownerId = reader.GetInt32(6);
 
                 if (cardType == CardType.Monster)
                 {
-                    cards.Add(new MonsterCard(name, damage, elementType, Species.Dragon, ownerId)); // TODO: Spezies anpassen
+                    var species = (Species)reader.GetInt32(4);
+                    cards.Add(new MonsterCard(name, damage, elementType, species, ownerId));
                 }
                 else
                 {
@@ -61,9 +62,9 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Id, Name, Damage, ElementType, CardType, OwnerId
+                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId
                 FROM Cards
-                WHERE Id = @CardId
+                WHERE Id = @CardId;
             ";
             command.Parameters.AddWithValue("@CardId", cardId);
 
@@ -74,12 +75,13 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var name = reader.GetString(1);
                 var damage = reader.GetDouble(2);
                 var elementType = (Element)reader.GetInt32(3);
-                var cardType = (CardType)reader.GetInt32(4);
-                var ownerId = reader.GetInt32(5);
+                var cardType = (CardType)reader.GetInt32(5);
+                var ownerId = reader.GetInt32(6);
 
                 if (cardType == CardType.Monster)
                 {
-                    return new MonsterCard(name, damage, elementType, Species.Dragon, ownerId); // TODO: Spezies anpassen
+                    var species = (Species)reader.GetInt32(4);
+                    return new MonsterCard(name, damage, elementType, species, ownerId);
                 }
                 else
                 {

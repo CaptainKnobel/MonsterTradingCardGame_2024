@@ -44,7 +44,11 @@ namespace MonsterTradingCardGame_2024.Data_Access
         // Add a new package to the repository (for "admin" usage)
         public bool AddPackage(CardPackage package)
         {
-            // TODO: A package must have exactly 5 cards
+            // A package must have exactly 5 cards
+            if (package.Cards.Count != 5)
+            {
+                throw new InvalidOperationException("A package must contain exactly 5 cards.");
+            }
 
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -108,7 +112,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Name, Damage, ElementType, CardType FROM Cards WHERE Id = ANY(@CardIds);";
+            command.CommandText = "SELECT Id, Name, Damage, ElementType, Species, CardType FROM Cards WHERE Id = ANY(@CardIds);";
             command.Parameters.AddWithValue("@CardIds", cardIds);
 
             using var reader = command.ExecuteReader();
@@ -119,11 +123,12 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var name = reader.GetString(1);
                 var damage = reader.GetDouble(2);
                 var elementType = (Element)reader.GetInt32(3);
-                var cardType = (CardType)reader.GetInt32(4);
+                var cardType = (CardType)reader.GetInt32(5);
 
                 if (cardType == CardType.Monster)
                 {
-                    cards.Add(new MonsterCard(name, damage, elementType, Species.Dragon)); // Spezies anpassen
+                    var species = (Species)reader.GetInt32(4);
+                    cards.Add(new MonsterCard(name, damage, elementType, species));
                 }
                 else
                 {

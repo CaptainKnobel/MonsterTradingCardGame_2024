@@ -49,7 +49,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT td.Id, c.Id, c.Name, c.Damage, c.ElementType, c.CardType, td.AcceptedElement, td.AcceptedSpecies, td.MinimumDamage
+                SELECT td.Id, c.Id, c.Name, c.Damage, c.ElementType, c.Species, c.CardType, td.AcceptedElement, td.AcceptedSpecies, td.MinimumDamage
                 FROM TradingDeals td
                 JOIN Cards c ON td.CardToTradeId = c.Id
                 WHERE td.Id = @Id
@@ -59,22 +59,36 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var reader = command.ExecuteReader();
             if (reader.Read())
             {
-                var card = new MonsterCard(
-                    reader.GetString(2),            // Name
-                    reader.GetDouble(3),            // Damage
-                    (Element)reader.GetInt32(4),    // ElementType
-                    (Species)reader.GetInt32(5)     // Species
-                )
+                var cardType = (CardType)reader.GetInt32(6);
+
+                Card card = cardType switch
                 {
-                    Id = reader.GetGuid(1)          // Card ID
+                    CardType.Monster => new MonsterCard(
+                        reader.GetString(2),          // Name
+                        reader.GetDouble(3),          // Damage
+                        (Element)reader.GetInt32(4),  // ElementType
+                        (Species)reader.GetInt32(5)   // Species
+                    )
+                    {
+                        Id = reader.GetGuid(1)        // Card ID
+                    },
+                    CardType.Spell => new SpellCard(
+                        reader.GetString(2),          // Name
+                        reader.GetDouble(3),          // Damage
+                        (Element)reader.GetInt32(4)   // ElementType
+                    )
+                    {
+                        Id = reader.GetGuid(1)        // Card ID
+                    },
+                    _ => throw new InvalidOperationException("Unknown card type.")
                 };
 
                 return new TradingDeal(
-                    reader.GetString(0),            // TradingDeal ID
+                    reader.GetString(0),              // TradingDeal ID
                     card,
-                    (Element)reader.GetInt32(6),    // AcceptedElement
-                    (Species)reader.GetInt32(7),    // AcceptedSpecies
-                    reader.GetFloat(8)              // MinimumDamage
+                    (Element)reader.GetInt32(7),      // AcceptedElement
+                    (Species)reader.GetInt32(8),      // AcceptedSpecies
+                    reader.GetFloat(9)                // MinimumDamage
                 );
             }
 

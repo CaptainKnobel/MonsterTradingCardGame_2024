@@ -20,4 +20,8 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="JsonConverters\" />
+  </ItemGroup>
+
 </Project>

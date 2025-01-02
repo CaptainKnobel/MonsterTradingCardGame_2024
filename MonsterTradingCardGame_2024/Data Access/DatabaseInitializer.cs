@@ -59,6 +59,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                             Name VARCHAR(50) NOT NULL,
                             Damage FLOAT NOT NULL,
                             ElementType INT NOT NULL,
+                            Species INT DEFAULT 0,
                             CardType INT NOT NULL,
                             OwnerId INT NOT NULL REFERENCES Users(Id)
                         );
