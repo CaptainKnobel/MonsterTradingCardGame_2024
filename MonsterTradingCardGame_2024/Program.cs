@@ -1,10 +1,10 @@
 ﻿using MonsterTradingCardGame_2024.Http.Endpoints;
 using MonsterTradingCardGame_2024.Http;
 using MonsterTradingCardGame_2024.Data_Access;
+using MonsterTradingCardGame_2024.Business_Logic;
 using System;
 using System.Net;
 using Npgsql;
-using MonsterTradingCardGame_2024.Business_Logic;
 
 namespace MonsterTradingCardGame_2024
 {
@@ -24,25 +24,30 @@ namespace MonsterTradingCardGame_2024
                 IUserRepository userRepository = new UserRepository(connectionString);
                 IPackageRepository packageRepository = new PackageRepository(connectionString);
                 ICardRepository cardRepository = new CardRepository(connectionString);
+                IDeckRepository deckRepository = new DeckRepository(connectionString);
+                ITradingRepository tradingRepository = new TradingRepository(connectionString);
 
                 // Initialize Handlers
                 UserHandler userHandler = new UserHandler(userRepository);
                 TransactionHandler transactionHandler = new TransactionHandler(userHandler, packageRepository);
                 CardHandler cardHandler = new CardHandler(cardRepository);
+                DeckHandler deckHandler = new DeckHandler(deckRepository, cardRepository);
+                ScoreboardHandler scoreboardHandler = new ScoreboardHandler(userRepository);
+                TradingHandler tradingHandler = new TradingHandler(tradingRepository, cardRepository);
 
                 // Create the Http Server
                 HttpServer server = new HttpServer();
 
                 // Register Endpoints for Http Server
-                server.RegisterEndpoint("users", new UsersEndpoint(userHandler));                  // Registers Endpoint for user registration
-                server.RegisterEndpoint("sessions", new SessionsEndpoint(userHandler));            // Registers Endpoint for user login
-                server.RegisterEndpoint("packages", new PackagesEndpoint(packageRepository));            // Registers Endpoint for card packages (creating packages)
-                server.RegisterEndpoint("transactions", new TransactionsEndpoint(transactionHandler));    // Registers Endpoint for transactions regarding card packages
-                server.RegisterEndpoint("cards", new CardsEndpoint(userHandler, cardHandler));                  // Registers Endpoint for card listing
-                server.RegisterEndpoint("deck", new DeckEndpoint());                    // Registers Endpoint for managing the user's deck
-                server.RegisterEndpoint("stats", new StatsEndpoint());                  // Registers Endpoint for viewing user statistics
-                server.RegisterEndpoint("scoreboard", new ScoreboardEndpoint());        // Registers Endpoint for viewing the scoreboard
-                server.RegisterEndpoint("tradings", new TradingsEndpoint());            // Registers Endpoint for trading cards
+                server.RegisterEndpoint("users", new UsersEndpoint(userHandler));                       // Registers Endpoint for user registration
+                server.RegisterEndpoint("sessions", new SessionsEndpoint(userHandler));                 // Registers Endpoint for user login
+                server.RegisterEndpoint("packages", new PackagesEndpoint(packageRepository));           // Registers Endpoint for card packages (creating packages)
+                server.RegisterEndpoint("transactions", new TransactionsEndpoint(transactionHandler));  // Registers Endpoint for transactions regarding card packages
+                server.RegisterEndpoint("cards", new CardsEndpoint(userHandler, cardHandler));          // Registers Endpoint for card listing
+                server.RegisterEndpoint("deck", new DeckEndpoint(userHandler, deckHandler));            // Registers Endpoint for managing the user's deck
+                server.RegisterEndpoint("stats", new StatsEndpoint());                                  // Registers Endpoint for viewing user statistics
+                server.RegisterEndpoint("scoreboard", new ScoreboardEndpoint(scoreboardHandler));       // Registers Endpoint for viewing the scoreboard
+                server.RegisterEndpoint("tradings", new TradingsEndpoint(tradingHandler));                            // Registers Endpoint for trading cards
 
                 // Start the Http Server
                 server.Run();

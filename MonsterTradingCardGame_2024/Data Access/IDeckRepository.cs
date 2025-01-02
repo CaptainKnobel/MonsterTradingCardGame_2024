@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Data_Access
 {
-    public interface ICardRepository
+    public interface IDeckRepository
     {
-        IEnumerable<Card> GetCardsByUserId(int userId);
-        Card? GetCardById(Guid cardId);
-        bool AddCard(Card card);
-        void UpdateCard(Card card);
+        IEnumerable<Card> GetDeckByUserId(int userId);
+        bool UpdateDeck(int userId, IEnumerable<Guid> cardIds);
     }
 }

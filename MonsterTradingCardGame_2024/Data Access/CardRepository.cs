@@ -108,5 +108,22 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             return command.ExecuteNonQuery() > 0;
         }
+
+        public void UpdateCard(Card card)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                UPDATE Cards
+                SET OwnerId = @OwnerId
+                WHERE Id = @Id
+            ";
+            command.Parameters.AddWithValue("@OwnerId", card.OwnerId);
+            command.Parameters.AddWithValue("@Id", card.Id);
+
+            command.ExecuteNonQuery();
+        }
     }
 }

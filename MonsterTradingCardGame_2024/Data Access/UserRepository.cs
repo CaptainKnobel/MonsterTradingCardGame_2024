@@ -174,5 +174,31 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return users;
         }
 
+        public IEnumerable<UserStats> GetScoreboardData()
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            // Alle Benutzer abrufen und nach ELO sortieren
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT Elo, Wins, Losses
+                FROM Users
+                ORDER BY Elo DESC";
+
+            using var reader = command.ExecuteReader();
+            var userStats = new List<UserStats>();
+            while (reader.Read())
+            {
+                userStats.Add(new UserStats(
+                    reader.GetInt32(0),  // Elo
+                    reader.GetInt32(1),  // Wins
+                    reader.GetInt32(2)   // Losses
+                ));
+            }
+
+            return userStats;
+        }
+
     } // <- End of UserRepository class
 } // <- End of MonsterTradingCardGame_2024.Data_Access namesspace

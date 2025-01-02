@@ -12,7 +12,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
         public static void InitializeDatabase(string connectionString)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            string dbName = builder.Database;
+            string dbName = builder.Database ?? throw new InvalidOperationException("Database name is not specified in the connection string.");
 
             builder.Remove("Database");
             string baseConnectionString = builder.ToString();
@@ -61,6 +61,19 @@ namespace MonsterTradingCardGame_2024.Data_Access
                             ElementType INT NOT NULL,
                             CardType INT NOT NULL,
                             OwnerId INT NOT NULL REFERENCES Users(Id)
+                        );
+
+                        CREATE TABLE IF NOT EXISTS Decks (
+                            UserId INT PRIMARY KEY REFERENCES Users(Id),
+                            CardIds UUID[] NOT NULL
+                        );
+
+                        CREATE TABLE IF NOT EXISTS TradingDeals (
+                            Id UUID PRIMARY KEY,
+                            CardToTradeId UUID NOT NULL REFERENCES Cards(Id),
+                            AcceptedElement INT NOT NULL,
+                            AcceptedSpecies INT NOT NULL,
+                            MinimumDamage FLOAT NOT NULL
                         );
                     ";
                     command.ExecuteNonQuery();

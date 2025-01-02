@@ -6,69 +6,92 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
     internal class TradingsEndpoint : IHttpEndpoint
     {
+        private readonly TradingHandler _tradingHandler;
+
+        public TradingsEndpoint(TradingHandler tradingHandler)
+        {
+            _tradingHandler = tradingHandler;
+        }
+
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
-            /*
-            if (rq.Method == HttpMethod.GET && rq.Path[1] == "tradings")
+            if (rq.Method == HttpMethod.POST && rq.Path[1] == "tradings")
             {
-                // Handle retrieval of trading deals
-                var trades = TradingHandler.GetAllTrades();
-                rs.Content = JsonSerializer.Serialize(trades);
-                rs.SetSuccess("Trades retrieved successfully", 200);
-                return true;
+                if (rq.Path.Length == 2) return HandleCreateTradingDeal(rq, rs);
+                if (rq.Path.Length == 3) return HandleAcceptTradingDeal(rq, rs);
             }
-            else if (rq.Method == HttpMethod.POST && rq.Path[1] == "tradings")
-            {
-                // Handle the creation of a new trading deal
-                if (string.IsNullOrWhiteSpace(rq.Content))
-                {
-                    rs.SetClientError("Trade data is empty or invalid", 400);
-                    return true;
-                }
 
-                var newTrade = JsonSerializer.Deserialize<TradingDeal>(rq.Content);
-
-                if (newTrade != null) // Check if deserialization succeeded
-                {
-                    bool success = TradingHandler.AddTrade(newTrade);
-
-                    if (success)
-                    {
-                        rs.SetSuccess("Trade added successfully", 201);
-                    }
-                    else
-                    {
-                        rs.SetClientError("Trade creation failed", 400);
-                    }
-                }
-                else
-                {
-                    rs.SetClientError("Invalid trade data", 400);
-                }
-                return true;
-            }
-            else if (rq.Method == HttpMethod.DELETE && rq.Path[1] == "tradings")
-            {
-                // Handle the deletion of a trading deal
-                bool success = TradingHandler.RemoveTrade(rq.Path[2]);
-
-                if (success)
-                {
-                    rs.SetSuccess("Trade removed successfully", 200);
-                }
-                else
-                {
-                    rs.SetClientError("Trade removal failed", 400);
-                }
-                return true;
-            }
-            */
             return false;
+        }
+
+        private bool HandleCreateTradingDeal(HttpRequest rq, HttpResponse rs)
+        {
+            if (string.IsNullOrWhiteSpace(rq.Content))
+            {
+                rs.SetClientError("Invalid request", 400);
+                return true;
+            }
+
+            var deal = JsonConvert.DeserializeObject<TradingDeal>(rq.Content);
+            if (deal == null)
+            {
+                rs.SetClientError("Invalid trading deal format", 400);
+                return true;
+            }
+
+            try
+            {
+                _tradingHandler.CreateTradingDeal(deal);
+                rs.SetSuccess("Trading deal created successfully", 201);
+            }
+            catch (Exception ex)
+            {
+                rs.SetServerError($"Failed to create trading deal: {ex.Message}");
+            }
+
+            return true;
+        }
+
+        private bool HandleAcceptTradingDeal(HttpRequest rq, HttpResponse rs)
+        {
+            if (string.IsNullOrWhiteSpace(rq.Content) || rq.Path.Length < 3)
+            {
+                rs.SetClientError("Invalid request", 400);
+                return true;
+            }
+
+            var tradingId = rq.Path[2];
+            var offeredCard = JsonConvert.DeserializeObject<Card>(rq.Content);
+
+            if (offeredCard == null)
+            {
+                rs.SetClientError("Invalid card format", 400);
+                return true;
+            }
+
+            try
+            {
+                if (_tradingHandler.AcceptTradingDeal(tradingId, offeredCard))
+                {
+                    rs.SetSuccess("Trading deal accepted", 200);
+                }
+                else
+                {
+                    rs.SetClientError("Trading deal conditions not met", 400);
+                }
+            }
+            catch (Exception ex)
+            {
+                rs.SetServerError($"Failed to accept trading deal: {ex.Message}");
+            }
+
+            return true;
         }
     }
 }

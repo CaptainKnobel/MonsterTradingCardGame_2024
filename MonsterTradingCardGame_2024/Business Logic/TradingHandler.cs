@@ -1,4 +1,5 @@
-﻿using MonsterTradingCardGame_2024.Models;
+﻿using MonsterTradingCardGame_2024.Data_Access;
+using MonsterTradingCardGame_2024.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,37 +8,50 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Business_Logic
 {
-    internal static class TradingHandler
+    public class TradingHandler
     {
-        private static List<TradingDeal> tradingDeals = new List<TradingDeal>();
+        private readonly ITradingRepository _tradingRepository;
+        private readonly ICardRepository _cardRepository;
 
-        // Fetch all current trading deals
-        public static List<TradingDeal> GetAllTrades()
+        public TradingHandler(ITradingRepository tradingRepository, ICardRepository cardRepository)
         {
-            return tradingDeals;
+            _tradingRepository = tradingRepository;
+            _cardRepository = cardRepository;
         }
 
-        // Add a new trade
-        public static bool AddTrade(TradingDeal newTrade)
+        public void CreateTradingDeal(TradingDeal deal)
         {
-            if (newTrade != null && !tradingDeals.Any(t => t.Id == newTrade.Id))
-            {
-                tradingDeals.Add(newTrade);
-                return true;
-            }
-            return false;
+            if (deal.CardToTrade == null)
+                throw new ArgumentException("Card to trade cannot be null");
+
+            _tradingRepository.AddTradingDeal(deal);
         }
 
-        // Remove a trade by its ID
-        public static bool RemoveTrade(string tradeId)
+        public bool AcceptTradingDeal(string tradingId, Card offeredCard)
         {
-            var tradeToRemove = tradingDeals.FirstOrDefault(t => t.Id == tradeId);
-            if (tradeToRemove != null)
+            var deal = _tradingRepository.GetTradingDealById(tradingId);
+            if (deal == null)
+                throw new InvalidOperationException("Trading deal not found");
+
+            if (offeredCard.ElementType != deal.AcceptedElement ||
+                offeredCard is MonsterCard monsterCard && monsterCard.MonsterSpecies != deal.AcceptedSpecies ||
+                offeredCard.Damage < deal.MinimumDamage)
             {
-                tradingDeals.Remove(tradeToRemove);
-                return true;
+                return false; // Bedingungen nicht erfüllt
             }
-            return false;
+
+            // Handel durchführen
+            // Besitzerwechsel durchführen
+            offeredCard.OwnerId = deal.CardToTrade?.OwnerId ?? throw new InvalidOperationException("Invalid trading deal state");
+            deal.CardToTrade.OwnerId = offeredCard.OwnerId;
+
+            // Karten aktualisieren
+            _cardRepository.UpdateCard(offeredCard);
+            _cardRepository.UpdateCard(deal.CardToTrade);
+
+            // Handelsangebot entfernen
+            _tradingRepository.RemoveTradingDeal(tradingId);
+            return true;
         }
     }
 }
