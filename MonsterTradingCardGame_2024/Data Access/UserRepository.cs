@@ -200,5 +200,34 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return userStats;
         }
 
+        public void UpdateUser(User user)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                UPDATE Users
+                SET 
+                    Username = @Username,
+                    Password = @Password,
+                    Coins = @Coins,
+                    Token = @Token,
+                    Elo = @Elo,
+                    Wins = @Wins,
+                    Losses = @Losses
+                WHERE Id = @Id
+            ";
+            command.Parameters.AddWithValue("Id", user.Id);
+            command.Parameters.AddWithValue("Username", user.Username ?? string.Empty);
+            command.Parameters.AddWithValue("Password", user.Password ?? string.Empty);
+            command.Parameters.AddWithValue("Coins", user.Coins);
+            command.Parameters.AddWithValue("Token", user.Token ?? string.Empty);
+            command.Parameters.AddWithValue("Elo", user.Stats.Elo);
+            command.Parameters.AddWithValue("Wins", user.Stats.Wins);
+            command.Parameters.AddWithValue("Losses", user.Stats.Losses);
+
+            command.ExecuteNonQuery();
+        }
     } // <- End of UserRepository class
 } // <- End of MonsterTradingCardGame_2024.Data_Access namesspace

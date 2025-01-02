@@ -1,10 +1,12 @@
 ﻿using MonsterTradingCardGame_2024.Http.Endpoints;
 using MonsterTradingCardGame_2024.Http;
 using MonsterTradingCardGame_2024.Data_Access;
+using MonsterTradingCardGame_2024.Services.Business_Logic;
 using MonsterTradingCardGame_2024.Business_Logic;
 using System;
 using System.Net;
 using Npgsql;
+using MonsterTradingCardGame_2024.Infrastructure;
 
 namespace MonsterTradingCardGame_2024
 {
@@ -20,12 +22,18 @@ namespace MonsterTradingCardGame_2024
                 // Initialize Database Connection
                 string connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
 
+                // Initialize Infrastructure
+                BattleQueue battleQueue = new BattleQueue();
+
                 // Create Repositories
                 IUserRepository userRepository = new UserRepository(connectionString);
                 IPackageRepository packageRepository = new PackageRepository(connectionString);
                 ICardRepository cardRepository = new CardRepository(connectionString);
                 IDeckRepository deckRepository = new DeckRepository(connectionString);
                 ITradingRepository tradingRepository = new TradingRepository(connectionString);
+
+                // Initialize Services
+                BattleService battleService = new BattleService();
 
                 // Initialize Handlers
                 UserHandler userHandler = new UserHandler(userRepository);
@@ -34,6 +42,7 @@ namespace MonsterTradingCardGame_2024
                 DeckHandler deckHandler = new DeckHandler(deckRepository, cardRepository);
                 ScoreboardHandler scoreboardHandler = new ScoreboardHandler(userRepository);
                 TradingHandler tradingHandler = new TradingHandler(tradingRepository, cardRepository);
+                BattleHandler battleHandler = new BattleHandler(userRepository, deckRepository, battleService);
 
                 // Create the Http Server
                 HttpServer server = new HttpServer();
@@ -47,7 +56,8 @@ namespace MonsterTradingCardGame_2024
                 server.RegisterEndpoint("deck", new DeckEndpoint(userHandler, deckHandler));            // Registers Endpoint for managing the user's deck
                 server.RegisterEndpoint("stats", new StatsEndpoint());                                  // Registers Endpoint for viewing user statistics
                 server.RegisterEndpoint("scoreboard", new ScoreboardEndpoint(scoreboardHandler));       // Registers Endpoint for viewing the scoreboard
-                server.RegisterEndpoint("tradings", new TradingsEndpoint(tradingHandler));                            // Registers Endpoint for trading cards
+                server.RegisterEndpoint("tradings", new TradingsEndpoint(tradingHandler));              // Registers Endpoint for trading cards
+                server.RegisterEndpoint("battles", new BattleEndpoint(battleHandler, battleQueue));                  // Registers Endpoint for battles between players
 
                 // Start the Http Server
                 server.Run();

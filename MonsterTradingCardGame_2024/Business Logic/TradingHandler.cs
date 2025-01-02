@@ -33,24 +33,35 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             if (deal == null)
                 throw new InvalidOperationException("Trading deal not found");
 
+            if (offeredCard.Locked)
+                throw new InvalidOperationException("The offered card is locked and cannot be traded.");
+
+            if (deal.CardToTrade?.Locked == true)
+                throw new InvalidOperationException("The card in the trading deal is locked and cannot be traded.");
+
             if (offeredCard.ElementType != deal.AcceptedElement ||
-                offeredCard is MonsterCard monsterCard && monsterCard.MonsterSpecies != deal.AcceptedSpecies ||
+                (offeredCard is MonsterCard monsterCard && monsterCard.MonsterSpecies != deal.AcceptedSpecies) ||
                 offeredCard.Damage < deal.MinimumDamage)
             {
-                return false; // Bedingungen nicht erfüllt
+                return false; // Conditions not met
             }
 
-            // Handel durchführen
-            // Besitzerwechsel durchführen
+            // Perform trade
+            var offeredCardOwnerId = offeredCard.OwnerId;
             offeredCard.OwnerId = deal.CardToTrade?.OwnerId ?? throw new InvalidOperationException("Invalid trading deal state");
-            deal.CardToTrade.OwnerId = offeredCard.OwnerId;
+            deal.CardToTrade.OwnerId = offeredCardOwnerId;
 
-            // Karten aktualisieren
+            // Lock traded cards after the trade (to prevent immediate re-trade)
+            offeredCard.Locked = true;
+            deal.CardToTrade.Locked = true;
+
+            // Update cards in the database
             _cardRepository.UpdateCard(offeredCard);
             _cardRepository.UpdateCard(deal.CardToTrade);
 
-            // Handelsangebot entfernen
+            // Remove the trading deal after completion
             _tradingRepository.RemoveTradingDeal(tradingId);
+
             return true;
         }
     }

@@ -14,5 +14,6 @@ namespace MonsterTradingCardGame_2024.Data_Access
         User? GetUserByToken(string token);
         List<User> GetAllUsers();
         IEnumerable<UserStats> GetScoreboardData();
+        void UpdateUser(User user);
     }
 }

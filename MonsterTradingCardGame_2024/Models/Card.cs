@@ -15,6 +15,7 @@ namespace MonsterTradingCardGame_2024.Models
         public Element ElementType { get; set; }
         public CardType CardType { get; set; }
         public int OwnerId { get; set; }
+        public bool Locked { get; set; }
 
         protected Card(string name, double damage, Element elementType, CardType cardType, int ownerId = 0)
         {
@@ -24,6 +25,7 @@ namespace MonsterTradingCardGame_2024.Models
             this.ElementType = elementType;
             this.CardType = cardType;
             this.OwnerId = ownerId;
+            this.Locked = false;
         }
     }
 }
