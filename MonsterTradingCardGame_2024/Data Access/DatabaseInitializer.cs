@@ -49,11 +49,6 @@ namespace MonsterTradingCardGame_2024.Data_Access
                             Losses INT NOT NULL DEFAULT 0
                         );
 
-                        CREATE TABLE IF NOT EXISTS Packages (
-                            Id SERIAL PRIMARY KEY,
-                            CardIds UUID[] NOT NULL  -- Array von Card-IDs
-                        );
-
                         CREATE TABLE IF NOT EXISTS Cards (
                             Id UUID PRIMARY KEY,
                             Name VARCHAR(50) NOT NULL,
@@ -61,7 +56,13 @@ namespace MonsterTradingCardGame_2024.Data_Access
                             ElementType INT NOT NULL,
                             Species INT DEFAULT 0,
                             CardType INT NOT NULL,
-                            OwnerId INT NOT NULL REFERENCES Users(Id)
+                            OwnerId INT NOT NULL REFERENCES Users(Id),
+                            Locked BOOLEAN DEFAULT FALSE
+                        );
+
+                        CREATE TABLE IF NOT EXISTS Packages (
+                            Id SERIAL PRIMARY KEY,
+                            CardIds UUID[] NOT NULL
                         );
 
                         CREATE TABLE IF NOT EXISTS Decks (

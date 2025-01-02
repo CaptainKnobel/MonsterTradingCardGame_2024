@@ -24,6 +24,9 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             if (deal.CardToTrade == null)
                 throw new ArgumentException("Card to trade cannot be null");
 
+            if (deal.CardToTrade.Locked)
+                throw new InvalidOperationException("The card to trade is locked and cannot be offered.");
+
             _tradingRepository.AddTradingDeal(deal);
         }
 

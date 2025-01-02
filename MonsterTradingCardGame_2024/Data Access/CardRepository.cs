@@ -25,7 +25,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId
+                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId, Locked
                 FROM Cards
                 WHERE OwnerId = @UserId
             ";
@@ -41,15 +41,18 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var elementType = (Element)reader.GetInt32(3);
                 var cardType = (CardType)reader.GetInt32(5);
                 var ownerId = reader.GetInt32(6);
+                var locked = reader.GetBoolean(7);
 
                 if (cardType == CardType.Monster)
                 {
                     var species = (Species)reader.GetInt32(4);
-                    cards.Add(new MonsterCard(name, damage, elementType, species, ownerId));
+                    var monsterCard = new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked };
+                    cards.Add(monsterCard);
                 }
                 else
                 {
-                    cards.Add(new SpellCard(name, damage, elementType, ownerId));
+                    var spellCard = new SpellCard(name, damage, elementType, ownerId) { Locked = locked };
+                    cards.Add(spellCard);
                 }
             }
             return cards;
@@ -62,7 +65,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId
+                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId, Locked
                 FROM Cards
                 WHERE Id = @CardId;
             ";
@@ -77,15 +80,16 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var elementType = (Element)reader.GetInt32(3);
                 var cardType = (CardType)reader.GetInt32(5);
                 var ownerId = reader.GetInt32(6);
+                var locked = reader.GetBoolean(7);
 
                 if (cardType == CardType.Monster)
                 {
                     var species = (Species)reader.GetInt32(4);
-                    return new MonsterCard(name, damage, elementType, species, ownerId);
+                    return new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked };
                 }
                 else
                 {
-                    return new SpellCard(name, damage, elementType, ownerId);
+                    return new SpellCard(name, damage, elementType, ownerId) { Locked = locked };
                 }
             }
             return null;
@@ -98,8 +102,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId)
-                VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId)
+                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId, Locked)
+                VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId, @Locked)
             ";
             command.Parameters.AddWithValue("@Id", card.Id);
             command.Parameters.AddWithValue("@Name", card.Name);
@@ -107,6 +111,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.Parameters.AddWithValue("@ElementType", (int)card.ElementType);
             command.Parameters.AddWithValue("@CardType", (int)card.CardType);
             command.Parameters.AddWithValue("@OwnerId", card.OwnerId);
+            command.Parameters.AddWithValue("@Locked", card.Locked);
 
             return command.ExecuteNonQuery() > 0;
         }
@@ -120,9 +125,11 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.CommandText = @"
                 UPDATE Cards
                 SET OwnerId = @OwnerId
+                    Locked = @Locked
                 WHERE Id = @Id
             ";
             command.Parameters.AddWithValue("@OwnerId", card.OwnerId);
+            command.Parameters.AddWithValue("@Locked", card.Locked);
             command.Parameters.AddWithValue("@Id", card.Id);
 
             command.ExecuteNonQuery();
