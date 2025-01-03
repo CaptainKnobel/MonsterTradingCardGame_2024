@@ -41,16 +41,20 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 }
 
                 var playerToken = tokens["PlayerToken"];
+                var bonus = tokens.ContainsKey("Bonus") ? tokens["Bonus"] : null;
 
                 // Matchmaking: Check if another player is available in the queue
-                if (_battleQueue.TryPairPlayers(playerToken, out string? opponentToken))
+                if (_battleQueue.TryPairPlayers(playerToken, bonus, out var opponent))
                 {
-                    if (opponentToken != null)
+                    if (opponent != null)
                     {
                         try
                         {
+                            // Retrieve opponent bonus if applicable
+                            var opponentBonus = tokens.ContainsKey("OpponentBonus") ? tokens["OpponentBonus"] : null;
+
                             // Start the battle
-                            var (winner, loser) = _battleHandler.StartBattle(playerToken, opponentToken);
+                            var (winner, loser) = _battleHandler.StartBattle(playerToken, opponent.Value.Token, bonus, opponent.Value.Bonus);
                             rs.SetJsonContentType();
                             rs.Content = JsonConvert.SerializeObject(new { Winner = winner, Loser = loser }, Formatting.Indented);
                             rs.SetSuccess("Battle completed", 200);

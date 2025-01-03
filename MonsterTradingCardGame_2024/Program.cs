@@ -32,9 +32,6 @@ namespace MonsterTradingCardGame_2024
                 IDeckRepository deckRepository = new DeckRepository(connectionString);
                 ITradingRepository tradingRepository = new TradingRepository(connectionString);
 
-                // Initialize Services
-                BattleService battleService = new BattleService();
-
                 // Initialize Handlers
                 UserHandler userHandler = new UserHandler(userRepository);
                 TransactionHandler transactionHandler = new TransactionHandler(userHandler, packageRepository);
@@ -42,7 +39,7 @@ namespace MonsterTradingCardGame_2024
                 DeckHandler deckHandler = new DeckHandler(deckRepository, cardRepository);
                 ScoreboardHandler scoreboardHandler = new ScoreboardHandler(userRepository);
                 TradingHandler tradingHandler = new TradingHandler(tradingRepository, cardRepository);
-                BattleHandler battleHandler = new BattleHandler(userRepository, deckRepository, battleService);
+                BattleHandler battleHandler = new BattleHandler(userRepository, deckRepository);
 
                 // Create the Http Server
                 HttpServer server = new HttpServer();

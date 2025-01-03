@@ -30,4 +30,13 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Business Logic\Services\" />
+    <Folder Include="Data Access\" />
+    <Folder Include="Enums\" />
+    <Folder Include="Http\Endpoints\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>
