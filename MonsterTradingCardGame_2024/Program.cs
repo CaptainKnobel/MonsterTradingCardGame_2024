@@ -5,6 +5,7 @@ using MonsterTradingCardGame_2024.Services.Business_Logic;
 using MonsterTradingCardGame_2024.Business_Logic;
 using System;
 using System.Net;
+using System.Threading;
 using Npgsql;
 using MonsterTradingCardGame_2024.Infrastructure;
 
@@ -51,7 +52,7 @@ namespace MonsterTradingCardGame_2024
                 server.RegisterEndpoint("transactions", new TransactionsEndpoint(transactionHandler));  // Registers Endpoint for transactions regarding card packages
                 server.RegisterEndpoint("cards", new CardsEndpoint(userHandler, cardHandler));          // Registers Endpoint for card listing
                 server.RegisterEndpoint("deck", new DeckEndpoint(userHandler, deckHandler));            // Registers Endpoint for managing the user's deck
-                server.RegisterEndpoint("stats", new StatsEndpoint());                                  // Registers Endpoint for viewing user statistics
+                server.RegisterEndpoint("stats", new StatsEndpoint(userHandler));                                  // Registers Endpoint for viewing user statistics
                 server.RegisterEndpoint("scoreboard", new ScoreboardEndpoint(scoreboardHandler));       // Registers Endpoint for viewing the scoreboard
                 server.RegisterEndpoint("tradings", new TradingsEndpoint(tradingHandler));              // Registers Endpoint for trading cards
                 server.RegisterEndpoint("battles", new BattleEndpoint(battleHandler, battleQueue));                  // Registers Endpoint for battles between players
@@ -71,6 +72,8 @@ namespace MonsterTradingCardGame_2024
             }
             finally
             {
+                Console.WriteLine("Stopping server...");
+                // [Your Cleanup Here]
                 Console.WriteLine("... Program End");
             }
 

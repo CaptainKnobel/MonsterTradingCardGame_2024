@@ -43,6 +43,7 @@ namespace MonsterTradingCardGame_2024.Http
         public void Run()
         {
             tcpListener.Start();
+            Console.WriteLine($"Server is running on {ip}:{port}");
             while (true)
             {
                 // ----- 0. Accept the TCP-Client and create the reader and writer -----

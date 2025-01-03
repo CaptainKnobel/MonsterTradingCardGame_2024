@@ -1,4 +1,5 @@
 ﻿using MonsterTradingCardGame_2024.Business_Logic;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,40 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
     internal class StatsEndpoint : IHttpEndpoint
     {
+        private readonly UserHandler _userHandler;
+
+        public StatsEndpoint(UserHandler userHandler)
+        {
+            _userHandler = userHandler;
+        }
+
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
         {
             if (rq.Method == HttpMethod.GET && rq.Path[1] == "stats")
             {
-                // Handle statistics retrieval logic here
-                string? token = rq.Headers["Authorization"].Split(' ')[1];
-                var stats = UserHandler.GetStatsByToken(token);
+                if (!rq.Headers.ContainsKey("Authorization"))
+                {
+                    rs.SetClientError("Authorization header is missing", 401);
+                    return true;
+                }
 
-                rs.Content = JsonSerializer.Serialize(stats);
+                // Extract token from Authorization header
+                string? token = rq.Headers["Authorization"].Split(' ')[1];
+                if (string.IsNullOrEmpty(token))
+                {
+                    rs.SetClientError("Token is invalid", 401);
+                    return true;
+                }
+
+                var stats = _userHandler.GetStatsByToken(token);
+
+                if (stats == null)
+                {
+                    rs.SetClientError("User not found or invalid token", 404);
+                    return true;
+                }
+
+                rs.Content = JsonConvert.SerializeObject(stats, Formatting.Indented);
                 rs.SetSuccess("Stats retrieved successfully", 200);
                 return true;
             }
