@@ -12,6 +12,8 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Npgsql" Version="8.0.5" />
     <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
       <PrivateAssets>all</PrivateAssets>
@@ -34,9 +36,12 @@
     <Folder Include="Business Logic\Services\" />
     <Folder Include="Data Access\" />
     <Folder Include="Enums\" />
-    <Folder Include="Http\Endpoints\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Models\" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <AssemblyName>MonsterTradingCardGame_2024.Test</AssemblyName>
+  </PropertyGroup>
 
 </Project>
