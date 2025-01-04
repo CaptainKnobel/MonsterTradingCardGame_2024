@@ -12,6 +12,8 @@ namespace MonsterTradingCardGame_2024.Http
 {
     internal class HttpServer
     {
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+
         private readonly int port = 10001;
         private readonly IPAddress ip = IPAddress.Loopback;
 
@@ -44,14 +46,25 @@ namespace MonsterTradingCardGame_2024.Http
         {
             tcpListener.Start();
             Console.WriteLine($"Server is running on {ip}:{port}");
-            while (true)
+            while (!cts.Token.IsCancellationRequested)
             {
-                // ----- 0. Accept the TCP-Client and create the reader and writer -----
-                var clientSocket = tcpListener.AcceptTcpClient();
-                var httpProcessor = new HttpProcessor(this, clientSocket);
-                // Use ThreadPool to make it multi-threaded
-                ThreadPool.QueueUserWorkItem(o => httpProcessor.Process());
+                if (tcpListener.Pending())
+                {
+                    // ----- 0. Accept the TCP-Client and create the reader and writer -----
+                    var clientSocket = tcpListener.AcceptTcpClient();
+                    var httpProcessor = new HttpProcessor(this, clientSocket);
+                    // Use ThreadPool to make it multi-threaded
+                    ThreadPool.QueueUserWorkItem(o => httpProcessor.Process());
+                }
+                Thread.Sleep(100); // To reduce CPU load
             }
+        }
+
+        public void Stop()
+        {
+            cts.Cancel();
+            tcpListener.Stop();
+            Console.WriteLine("Server has been stopped.");
         }
 
         public void RegisterEndpoint(string path, IHttpEndpoint endpoint)

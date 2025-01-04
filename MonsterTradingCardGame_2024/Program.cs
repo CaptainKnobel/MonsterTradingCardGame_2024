@@ -7,6 +7,7 @@ using System;
 using System.Net;
 using System.Threading;
 using Npgsql;
+using MonsterTradingCardGame_2024.Infrastructure.Database;
 
 namespace MonsterTradingCardGame_2024
 {
@@ -15,12 +16,23 @@ namespace MonsterTradingCardGame_2024
         static void Main(string[] args)
         {
             Console.WriteLine("Program Start ...");
+
+            // Initialize Connection String for Database Connection
+            string connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+            // Initialize the Http Server
+            HttpServer? server = null;
+
             try
             {
                 Console.WriteLine("=*=*=*=[ Monster Trading Card Game ]=*=*=*=");
 
-                // Initialize Database Connection
-                string connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+                // Initialize Database / -Connection
+                //#if DEBUG
+                Console.WriteLine("Cleaning up Database...");
+                DatabaseManager.CleanupTables(connectionString);
+                //#endif
+                Console.WriteLine("Initializing Database...");
+                DatabaseManager.InitializeDatabase(connectionString);
 
                 // Initialize Infrastructure
                 BattleQueue battleQueue = new BattleQueue();
@@ -41,8 +53,10 @@ namespace MonsterTradingCardGame_2024
                 TradingHandler tradingHandler = new TradingHandler(tradingRepository, cardRepository);
                 BattleHandler battleHandler = new BattleHandler(userRepository, deckRepository);
 
-                // Create the Http Server
-                HttpServer server = new HttpServer();
+                // Setup the Http Server
+                Console.WriteLine("Setting up server...");
+                server = new HttpServer();
+                var serverThread = new Thread(() => server.Run());
 
                 // Register Endpoints for Http Server
                 server.RegisterEndpoint("users", new UsersEndpoint(userHandler));                       // Registers Endpoint for user registration
@@ -57,7 +71,16 @@ namespace MonsterTradingCardGame_2024
                 server.RegisterEndpoint("battles", new BattleEndpoint(battleHandler, battleQueue));     // Registers Endpoint for battles between players
 
                 // Start the Http Server
-                server.Run();
+                serverThread.Start();
+
+                // Open shut down option for Http Server
+                Console.WriteLine("Press 'q' to stop the server...");
+                while (Console.ReadKey(true).Key != ConsoleKey.Q)
+                {
+                    Thread.Sleep(100); // Avoids unnecessary Resource usage.
+                }
+                server.Stop();
+                serverThread.Join();
             }
             catch (NpgsqlException ex)
             {
@@ -71,8 +94,15 @@ namespace MonsterTradingCardGame_2024
             }
             finally
             {
+                // Cleanup
                 Console.WriteLine("Stopping server...");
-                // [Your Cleanup Here]
+                server?.Stop();
+
+                //#if DEBUG
+                Console.WriteLine("Cleaning up Database...");
+                DatabaseManager.CleanupTables(connectionString);
+                //#endif
+
                 Console.WriteLine("... Program End");
             }
 

@@ -139,7 +139,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return cards;
         }
 
-        private void DeletePackageById(int packageId)
+        internal void DeletePackageById(int packageId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();

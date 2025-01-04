@@ -5,22 +5,36 @@ using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.Models;
-using NSubstitute;
+using Npgsql;
 using NUnit.Framework;
+using NSubstitute;
 
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
     [TestFixture]
-    public class UserRepositoryTests
+    public class UserRepositoryTests : IDisposable
     {
         private UserRepository _userRepository;
         private string _connectionString;
+        private NpgsqlConnection _connection;
+        private NpgsqlTransaction _transaction;
 
         [SetUp]
         public void Setup()
         {
-            _connectionString = "Host=localhost;Username=testuser;Password=testpass;Database=testdb";
+            _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+            _connection = new NpgsqlConnection(_connectionString);
+            _connection.Open();
+            _transaction = _connection.BeginTransaction();
             _userRepository = new UserRepository(_connectionString);
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            _transaction.Rollback();
+            _transaction.Dispose();
+            _connection.Dispose();
         }
 
         [Test]
@@ -134,9 +148,6 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             var user2 = new UserStats { Elo = 1300, Wins = 15, Losses = 3 };
             var user3 = new UserStats { Elo = 1100, Wins = 8, Losses = 7 };
 
-            // Mocking database interaction
-            var stats = new List<UserStats> { user1, user2, user3 };
-
             // Act
             var scoreboard = _userRepository.GetScoreboardData();
 
@@ -163,6 +174,12 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             // Assert
             Assert.That(updatedUser?.Coins, Is.EqualTo(user.Coins));
             Assert.That(updatedUser?.Stats.Elo, Is.EqualTo(user.Stats.Elo));
+        }
+
+        public void Dispose()
+        {
+            _transaction?.Dispose();
+            _connection?.Dispose();
         }
     }
 }
