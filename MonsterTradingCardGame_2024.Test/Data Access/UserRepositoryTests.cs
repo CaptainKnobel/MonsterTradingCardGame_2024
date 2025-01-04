@@ -13,6 +13,7 @@ using MonsterTradingCardGame_2024.Infrastructure.Database;
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.None)]
     public class UserRepositoryTests : IDisposable
     {
         private UserRepository _userRepository;
