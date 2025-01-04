@@ -1,106 +1,108 @@
-﻿using NUnit;
-using NUnit.Framework;
-using MonsterTradingCardGame_2024.Business_Logic;
-using MonsterTradingCardGame_2024.Models;
-using NSubstitute;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardGame_2024.Enums;
+using MonsterTradingCardGame_2024.Models;
+using MonsterTradingCardGame_2024.Data_Access;
+using MonsterTradingCardGame_2024.Business_Logic;
+using NSubstitute;
+using NUnit;
+using NUnit.Framework;
 
 namespace MonsterTradingCardGame_2024.Test.Business_Logic
-{/*
+{
     [TestFixture]
     public class TransactionHandlerTests
     {
-        private IUserRepository _userRepositoryMock;
-        private IPackageRepository _packageRepositoryMock;
+        private IUserRepository _userRepository;
+        private IPackageRepository _packageRepository;
+        private TransactionHandler _transactionHandler;
 
         [SetUp]
         public void Setup()
         {
-            // Mocks erstellen
-            _userRepositoryMock = Substitute.For<IUserRepository>();
-            _packageRepositoryMock = Substitute.For<IPackageRepository>();
-
-            // Repositories in Handler injizieren (falls nötig)
-            UserHandler.SetUserRepository(_userRepositoryMock);
-            PackageRepository.SetPackageRepository(_packageRepositoryMock);
+            _userRepository = Substitute.For<IUserRepository>();
+            _packageRepository = Substitute.For<IPackageRepository>();
+            var userHandler = new UserHandler(_userRepository); // No mocking for UserHandler
+            _transactionHandler = new TransactionHandler(userHandler, _packageRepository);
         }
 
         [Test]
-        public void BuyPackage_Success_ReturnsPackage()
+        public void BuyPackage_UserNotFound_ReturnsError()
         {
             // Arrange
-            string validToken = "valid-token";
-            var user = new User { Token = validToken, Coins = 10 };
-
-            // Setup Mock für Benutzer
-            _userRepositoryMock.GetUserByToken(validToken).Returns(user);
-
-            // Setup Mock für verfügbares Paket
-            var mockPackage = new CardPackage(new List<Card>
-            {
-                new Card("Card 1", 10, Element.Fire, CardType.Monster),
-                new Card("Card 2", 20, Element.Water, CardType.Monster),
-                new Card("Card 3", 30, Element.Normal, CardType.Spell),
-                new Card("Card 4", 40, Element.Fire, CardType.Spell),
-                new Card("Card 5", 50, Element.Water, CardType.Monster)
-            });
-            _packageRepositoryMock.GetAvailablePackage().Returns(mockPackage);
+            var token = "invalid-token";
+            _userRepository.GetUserByToken(token).Returns((User)null!);
 
             // Act
-            var (isSuccess, package, errorMessage) = TransactionHandler.BuyPackage(validToken);
+            var result = _transactionHandler.BuyPackage(token);
 
             // Assert
-            Assert.IsTrue(isSuccess, "Transaction should be successful.");
-            Assert.NotNull(package, "Package should not be null.");
-            Assert.AreEqual(mockPackage, package, "Returned package should match the mock package.");
-            Assert.IsNull(errorMessage, "Error message should be null.");
+            Assert.That(result.IsSuccess, Is.False);
+            Assert.That(result.ErrorMessage, Is.EqualTo("Invalid authentication token"));
         }
 
         [Test]
-        public void BuyPackage_InsufficientFunds_ReturnsError()
+        public void BuyPackage_NotEnoughCoins_ReturnsError()
         {
             // Arrange
-            string token = "low-funds-token";
-            var user = new User { Token = token, Coins = 1 };
-
-            // Setup Mock für Benutzer
-            _userRepositoryMock.GetUserByToken(token).Returns(user);
+            var user = new User { Coins = 3 };
+            var token = "valid-token";
+            _userRepository.GetUserByToken(token).Returns(user);
 
             // Act
-            var (isSuccess, package, errorMessage) = TransactionHandler.BuyPackage(token);
+            var result = _transactionHandler.BuyPackage(token);
 
             // Assert
-            Assert.IsFalse(isSuccess, "Transaction should fail due to insufficient funds.");
-            Assert.IsNull(package, "Package should be null.");
-            Assert.AreEqual("Not enough money to buy the package", errorMessage, "Error message should indicate insufficient funds.");
+            Assert.That(result.IsSuccess, Is.False);
+            Assert.That(result.ErrorMessage, Is.EqualTo("Not enough money to buy the package"));
         }
 
         [Test]
         public void BuyPackage_NoPackagesAvailable_ReturnsError()
         {
             // Arrange
-            string validToken = "valid-token";
-            var user = new User { Token = validToken, Coins = 10 };
-
-            // Setup Mock für Benutzer
-            _userRepositoryMock.GetUserByToken(validToken).Returns(user);
-
-            // Setup Mock für kein verfügbares Paket
-            _packageRepositoryMock.GetAvailablePackage().Returns((CardPackage?)null);
+            var user = new User { Coins = 10 };
+            var token = "valid-token";
+            _userRepository.GetUserByToken(token).Returns(user);
+            _packageRepository.GetAvailablePackage().Returns((CardPackage)null!);
 
             // Act
-            var (isSuccess, package, errorMessage) = TransactionHandler.BuyPackage(validToken);
+            var result = _transactionHandler.BuyPackage(token);
 
             // Assert
-            Assert.IsFalse(isSuccess, "Transaction should fail due to no available packages.");
-            Assert.IsNull(package, "Package should be null.");
-            Assert.AreEqual("No packages available for purchase", errorMessage, "Error message should indicate no available packages.");
+            Assert.That(result.IsSuccess, Is.False);
+            Assert.That(result.ErrorMessage, Is.EqualTo("No packages available for purchase"));
+        }
+
+        [Test]
+        public void BuyPackage_SuccessfullyBuysPackage_ReturnsPackage()
+        {
+            // Arrange
+            var user = new User { Coins = 10 };
+            var token = "valid-token";
+            var cards = new List<Card>
+            {
+                new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon),
+                new MonsterCard("Goblin", 20, Enums.Element.Normal, Enums.Species.Goblin),
+                new SpellCard("Fireball", 40, Enums.Element.Fire),
+                new SpellCard("WaterSplash", 30, Enums.Element.Water),
+                new MonsterCard("Elf", 25, Enums.Element.Normal, Enums.Species.Elf)
+            };
+            var package = new CardPackage(cards);
+
+            _userRepository.GetUserByToken(token).Returns(user);
+            _packageRepository.GetAvailablePackage().Returns(package);
+
+            // Act
+            var result = _transactionHandler.BuyPackage(token);
+
+            // Assert
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(result.Package, Is.EqualTo(package));
+            Assert.That(user.Stack.Cards, Is.EquivalentTo(cards));
         }
     }
-    */
 }

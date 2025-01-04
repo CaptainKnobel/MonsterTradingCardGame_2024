@@ -17,11 +17,13 @@ namespace MonsterTradingCardGame_2024.Test.Http.Endpoints
     {
         private UsersEndpoint _endpoint;
         private UserHandler _userHandler;
+        private IUserRepository _userRepository;
 
         [SetUp]
         public void Setup()
         {
-            _userHandler = Substitute.For<UserHandler>(Substitute.For<IUserRepository>());
+            _userRepository = Substitute.For<IUserRepository>();
+            _userHandler = new UserHandler(_userRepository);
             _endpoint = new UsersEndpoint(_userHandler);
         }
 
@@ -32,7 +34,7 @@ namespace MonsterTradingCardGame_2024.Test.Http.Endpoints
             var requestContent = "{\"Username\":\"testuser\",\"Password\":\"password123\"}";
             var request = CreateHttpRequest(MonsterTradingCardGame_2024.Http.HttpMethod.POST, new[] { "", "users" }, requestContent);
             var response = CreateHttpResponse();
-            _userHandler.RegisterUser("testuser", "password123").Returns(true);
+            _userRepository.Register("testuser", "password123").Returns(true);
 
             // Act
             var result = _endpoint.HandleRequest(request, response);
@@ -66,7 +68,7 @@ namespace MonsterTradingCardGame_2024.Test.Http.Endpoints
             var requestContent = "{\"Username\":\"testuser\",\"Password\":\"password123\"}";
             var request = CreateHttpRequest(MonsterTradingCardGame_2024.Http.HttpMethod.POST, new[] { "", "users" }, requestContent);
             var response = CreateHttpResponse();
-            _userHandler.RegisterUser("testuser", "password123").Returns(false);
+            _userRepository.Register("testuser", "password123").Returns(false);
 
             // Act
             var result = _endpoint.HandleRequest(request, response);

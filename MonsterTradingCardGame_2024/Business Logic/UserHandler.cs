@@ -123,15 +123,12 @@ namespace MonsterTradingCardGame_2024.Business_Logic
 
         public bool SpendCoins(User user, int amount)
         {
-            if(user.Coins < 5) // Check if user has enough coins. A package costs 5 coins.
+            if (user.Coins >= amount)   // Check if user has enough coins. (A package costs 5 coins.)
             {
-                if (user.Coins >= amount)
-                {
-                    user.Coins -= amount;
-                    return true;
-                }
+                user.Coins -= amount;
+                return true;
             }
-            return false;
+            return false;   // User doesn't have enough coins
         }
 
     } // <- End of UserHandler class
