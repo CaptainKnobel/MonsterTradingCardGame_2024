@@ -26,6 +26,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
 
+            DatabaseManager.CleanupTables(_connectionString);
             DatabaseManager.InitializeDatabase(_connectionString);
 
             _connection = new NpgsqlConnection(_connectionString);
