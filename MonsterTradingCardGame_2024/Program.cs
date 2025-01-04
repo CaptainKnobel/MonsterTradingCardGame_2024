@@ -125,3 +125,26 @@ namespace MonsterTradingCardGame_2024
  * docker stop postgresdb 
  * 
  */
+//-----
+/* 
+ * Docker-Container für PostgreSQL erstellen (für persistenten Gebrauch):
+ * docker run --name postgresdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v pgdata:/var/lib/postgresql/data -d postgres
+ * 
+ * Alternative (wenn Port 5432 belegt ist):
+ * docker run --name postgresdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5433:5432 -v pgdata:/var/lib/postgresql/data -d postgres
+ * 
+ * Danach den Container starten:
+ * docker start postgresdb
+ * 
+ * Verbindung zur Datenbank prüfen:
+ * psql -h localhost -U postgres -p 5432
+ * 
+ * Container stoppen:
+ * docker stop postgresdb
+ * 
+ * Container löschen (optional):
+ * docker rm postgresdb
+ * 
+ * Daten löschen (optional, entfernt auch persistente Daten):
+ * docker volume rm pgdata
+ */
