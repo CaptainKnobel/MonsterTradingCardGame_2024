@@ -1,13 +1,12 @@
 ﻿using MonsterTradingCardGame_2024.Http.Endpoints;
 using MonsterTradingCardGame_2024.Http;
 using MonsterTradingCardGame_2024.Data_Access;
-using MonsterTradingCardGame_2024.Services.Business_Logic;
 using MonsterTradingCardGame_2024.Business_Logic;
+using MonsterTradingCardGame_2024.Infrastructure;
 using System;
 using System.Net;
 using System.Threading;
 using Npgsql;
-using MonsterTradingCardGame_2024.Infrastructure;
 
 namespace MonsterTradingCardGame_2024
 {

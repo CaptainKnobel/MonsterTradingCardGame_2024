@@ -21,6 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include= "MonsterTradingCardGame_2024.Test" />
+    <InternalsVisibleTo Include="MonsterTradingCardGame_2024.Test" />
   </ItemGroup>
 </Project>

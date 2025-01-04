@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonsterTradingCardGame_2024.Data_Access
+namespace MonsterTradingCardGame_2024.Infrastructure.Database
 {
     internal static class DatabaseInitializer
     {
