@@ -8,6 +8,7 @@ using MonsterTradingCardGame_2024.Models;
 using Npgsql;
 using NUnit.Framework;
 using NSubstitute;
+using MonsterTradingCardGame_2024.Infrastructure.Database;
 
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
@@ -23,6 +24,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void Setup()
         {
             _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+
+            DatabaseManager.InitializeDatabase(_connectionString);
+
             _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
@@ -178,6 +182,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
 
         public void Dispose()
         {
+            DatabaseManager.CleanupTables(_connectionString);
+
+            _transaction?.Rollback();
             _transaction?.Dispose();
             _connection?.Dispose();
         }
