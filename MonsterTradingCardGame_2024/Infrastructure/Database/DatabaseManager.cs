@@ -82,11 +82,24 @@ namespace MonsterTradingCardGame_2024.Infrastructure.Database
                     using (var command = connection.CreateCommand())
                     {
                         command.CommandText = @"
-                            TRUNCATE TABLE Cards RESTART IDENTITY CASCADE;
-                            TRUNCATE TABLE Users RESTART IDENTITY CASCADE;
-                            TRUNCATE TABLE Packages RESTART IDENTITY CASCADE;
-                            TRUNCATE TABLE Decks RESTART IDENTITY CASCADE;
-                            TRUNCATE TABLE TradingDeals RESTART IDENTITY CASCADE;
+                            DO $$
+                            BEGIN
+                                IF EXISTS (SELECT FROM pg_tables WHERE tablename = 'cards') THEN
+                                    EXECUTE 'TRUNCATE TABLE Cards RESTART IDENTITY CASCADE';
+                                END IF;
+                                IF EXISTS (SELECT FROM pg_tables WHERE tablename = 'users') THEN
+                                    EXECUTE 'TRUNCATE TABLE Users RESTART IDENTITY CASCADE';
+                                END IF;
+                                IF EXISTS (SELECT FROM pg_tables WHERE tablename = 'packages') THEN
+                                    EXECUTE 'TRUNCATE TABLE Packages RESTART IDENTITY CASCADE';
+                                END IF;
+                                IF EXISTS (SELECT FROM pg_tables WHERE tablename = 'decks') THEN
+                                    EXECUTE 'TRUNCATE TABLE Decks RESTART IDENTITY CASCADE';
+                                END IF;
+                                IF EXISTS (SELECT FROM pg_tables WHERE tablename = 'tradingdeals') THEN
+                                    EXECUTE 'TRUNCATE TABLE TradingDeals RESTART IDENTITY CASCADE';
+                                END IF;
+                            END $$;
                         ";
                         command.ExecuteNonQuery();
                     }
