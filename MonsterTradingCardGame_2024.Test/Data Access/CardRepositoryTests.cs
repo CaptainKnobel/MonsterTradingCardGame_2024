@@ -132,9 +132,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             foreach (var card in userCards)
             {
                 counter++;
-                Console.WriteLine($"Card ID: {card.Id}, Name: {card.Name}, OwnerId: {card.OwnerId}");
+                TestContext.Progress.WriteLine($"Card ID: {card.Id}, Name: {card.Name}, OwnerId: {card.OwnerId}");
             }
-            Console.WriteLine($"Retrieved Cards Count: {counter}");
+            TestContext.Progress.WriteLine($"Retrieved Cards Count: {counter}");
 
             // Assert
             Assert.That(userCards.Count, Is.EqualTo(2));
