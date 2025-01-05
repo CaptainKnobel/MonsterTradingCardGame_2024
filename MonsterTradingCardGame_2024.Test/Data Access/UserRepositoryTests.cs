@@ -21,16 +21,12 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         private NpgsqlConnection _connection;
         private NpgsqlTransaction _transaction;
 
-        [OneTimeSetUp]
-        public void GlobalSetup()
-        {
-            _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
-            DatabaseManager.InitializeDatabase(_connectionString);
-        }
-
         [SetUp]
         public void Setup()
         {
+            _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+            DatabaseManager.CleanupTables(_connectionString);
+            DatabaseManager.InitializeDatabase(_connectionString);
             _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
@@ -50,15 +46,10 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             }
             finally
             {
+                DatabaseManager.CleanupTables(_connectionString);
                 _transaction?.Dispose();
                 _connection?.Dispose();
             }
-        }
-
-        [OneTimeTearDown]
-        public void GlobalCleanup()
-        {
-            DatabaseManager.CleanupTables(_connectionString);
         }
 
         [Test]
