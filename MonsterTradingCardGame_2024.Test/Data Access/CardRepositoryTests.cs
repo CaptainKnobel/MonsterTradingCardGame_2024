@@ -8,7 +8,9 @@ using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.Models;
 using MonsterTradingCardGame_2024.Enums;
 using Npgsql;
+using NUnit;
 using NUnit.Framework;
+using NSubstitute;
 
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
@@ -16,32 +18,63 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
     public class CardRepositoryTests
     {
         private CardRepository _cardRepository;
+        private UserRepository _userRepository;
         private string _connectionString;
+        private NpgsqlConnection _connection;
+        private NpgsqlTransaction _transaction;
 
         [SetUp]
         public void Setup()
         {
             _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
-
-            // Ensure database is ready for testing
             DatabaseManager.CleanupTables(_connectionString);
             DatabaseManager.InitializeDatabase(_connectionString);
-
+            _connection = new NpgsqlConnection(_connectionString);
+            _connection.Open();
+            _transaction = _connection.BeginTransaction();
             _cardRepository = new CardRepository(_connectionString);
+            _userRepository = new UserRepository(_connectionString);
         }
 
         [TearDown]
         public void Teardown()
         {
-            // Clean up tables after each test
-            DatabaseManager.CleanupTables(_connectionString);
+            try
+            {
+                _transaction.Rollback();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Warning: Error during Transaction Rollback: {ex.Message}");
+            }
+            finally
+            {
+                DatabaseManager.CleanupTables(_connectionString);
+                _transaction?.Dispose();
+                _connection?.Dispose();
+            }
+        }
+
+        // Cards require a User, so we have to make a Test User every time. This means CardRep. requires UserRep. to work!
+        private User CreateTestUser(string username, string password)
+        {
+            var isRegistered = _userRepository.Register(username, password);
+            Assert.That(isRegistered, Is.True, "User registration failed");
+            var user = _userRepository.Login(username, password);
+            Assert.That(user, Is.Not.Null, "User login failed");
+            return user!;
         }
 
         [Test]
         public void AddCard_ValidCard_SuccessfullyAddsCard()
         {
             // Arrange
-            var card = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon) { Id = Guid.NewGuid() };
+            var user = CreateTestUser("testuser", "password123");
+            var card = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user!.Id
+            };
 
             // Act
             Assert.DoesNotThrow(() => _cardRepository.AddCard(card));
