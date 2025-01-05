@@ -13,22 +13,24 @@ using MonsterTradingCardGame_2024.Infrastructure.Database;
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.None)]
-    public class UserRepositoryTests : IDisposable
+    //[Parallelizable(ParallelScope.None)]
+    public class UserRepositoryTests
     {
         private UserRepository _userRepository;
         private string _connectionString;
         private NpgsqlConnection _connection;
         private NpgsqlTransaction _transaction;
 
+        [OneTimeSetUp]
+        public void GlobalSetup()
+        {
+            _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+            DatabaseManager.InitializeDatabase(_connectionString);
+        }
+
         [SetUp]
         public void Setup()
         {
-            _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
-
-            DatabaseManager.CleanupTables(_connectionString);
-            DatabaseManager.InitializeDatabase(_connectionString);
-
             _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
@@ -38,9 +40,25 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         [TearDown]
         public void Teardown()
         {
-            _transaction.Rollback();
-            _transaction.Dispose();
-            _connection.Dispose();
+            try
+            {
+                _transaction.Rollback();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Warning: Error during Transaction Rollback: {ex.Message}");
+            }
+            finally
+            {
+                _transaction?.Dispose();
+                _connection?.Dispose();
+            }
+        }
+
+        [OneTimeTearDown]
+        public void GlobalCleanup()
+        {
+            DatabaseManager.CleanupTables(_connectionString);
         }
 
         [Test]
@@ -180,15 +198,6 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             // Assert
             Assert.That(updatedUser?.Coins, Is.EqualTo(user.Coins));
             Assert.That(updatedUser?.Stats.Elo, Is.EqualTo(user.Stats.Elo));
-        }
-
-        public void Dispose()
-        {
-            DatabaseManager.CleanupTables(_connectionString);
-
-            _transaction?.Rollback();
-            _transaction?.Dispose();
-            _connection?.Dispose();
         }
     }
 }
