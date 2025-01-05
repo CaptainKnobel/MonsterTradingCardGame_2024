@@ -21,23 +21,33 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion
         {
             var jsonObject = JObject.Load(reader);
 
+            // Name und Damage sind Pflichtfelder
             var name = jsonObject["Name"]?.Value<string>() ?? throw new JsonSerializationException("Card name is missing");
-            var damage = jsonObject["Damage"]!.Value<double>();
-            var cardType = (CardType)jsonObject["CardType"]!.Value<int>();
-            var element = InferElementFromName(name);
+            var damage = jsonObject["Damage"]?.Value<double>() ?? throw new JsonSerializationException("Card damage is missing");
 
+            // Kartentyp und Spezies aus dem JSON entnehmen, aus dem Namen ableiten oder Defaults setzen
+            var cardType = jsonObject["CardType"]?.Value<int>() != null
+                ? (CardType)jsonObject["CardType"]!.Value<int>()
+                : InferCardTypeFromName(name);
+
+            var species = cardType == CardType.Monster && jsonObject["Species"]?.Value<int>() != null
+                ? (Species)jsonObject["Species"]!.Value<int>()
+                : InferSpeciesFromName(name);
+
+            var element = jsonObject["ElementType"]?.Value<int>() != null
+                ? (Element)jsonObject["ElementType"]!.Value<int>()
+                : InferElementFromName(name);
+
+
+            // Karte basierend auf Typ erstellen
             Card card = cardType switch
             {
-                CardType.Monster => new MonsterCard(
-                    name,
-                    damage,
-                    element,
-                    (Species)jsonObject["MonsterSpecies"]!.Value<int>()
-                ),
+                CardType.Monster => new MonsterCard(name, damage, element, species),
                 CardType.Spell => new SpellCard(name, damage, element),
-                _ => throw new JsonSerializationException("Unknown card type")
+                _ => throw new JsonSerializationException($"Unknown card type for name: {name}")
             };
 
+            // Zusätzliche JSON-Werte befüllen
             serializer.Populate(jsonObject.CreateReader(), card);
             return card;
         }
@@ -46,34 +56,39 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion
         {
             serializer.Serialize(writer, value);
         }
-
         private Element InferElementFromName(string name)
         {
-            if (name.Contains("Normal", StringComparison.OrdinalIgnoreCase) ||
-                name.Contains("Grass", StringComparison.OrdinalIgnoreCase) ||
-                name.Contains("Regular", StringComparison.OrdinalIgnoreCase))
-            {
-                return Element.Normal;
-            }
-            if (name.Contains("Fire", StringComparison.OrdinalIgnoreCase))
-            {
-                return Element.Fire;
-            }
             if (name.Contains("Water", StringComparison.OrdinalIgnoreCase))
-            {
                 return Element.Water;
-            }
-            if (name.Contains("Earth", StringComparison.OrdinalIgnoreCase))
-            {
+            if (name.Contains("Fire", StringComparison.OrdinalIgnoreCase))
+                return Element.Fire;
+            if (name.Contains("Earth", StringComparison.OrdinalIgnoreCase) || name.Contains("Grass", StringComparison.OrdinalIgnoreCase))
                 return Element.Earth;
-            }
             if (name.Contains("Air", StringComparison.OrdinalIgnoreCase))
-            {
                 return Element.Air;
-            }
+            return Element.Normal; // Default-Wert
+        }
 
-            // Fallback to normal if element cannot be inferred
-            return Element.Normal;
+        private CardType InferCardTypeFromName(string name)
+        {
+            if (name.Contains("Spell", StringComparison.OrdinalIgnoreCase))
+                return CardType.Spell;
+            return CardType.Monster; // Default-Wert
+        }
+
+        private Species InferSpeciesFromName(string name)
+        {
+            if (name.Contains("Goblin", StringComparison.OrdinalIgnoreCase))
+                return Species.Goblin;
+            if (name.Contains("Dragon", StringComparison.OrdinalIgnoreCase))
+                return Species.Dragon;
+            if (name.Contains("Ork", StringComparison.OrdinalIgnoreCase))
+                return Species.Ork;
+            if (name.Contains("Elf", StringComparison.OrdinalIgnoreCase))
+                return Species.Ork;
+            if (name.Contains("Knight", StringComparison.OrdinalIgnoreCase))
+                return Species.Knight;
+            return Species.Goblin; // Default-Wert
         }
     }
 }
