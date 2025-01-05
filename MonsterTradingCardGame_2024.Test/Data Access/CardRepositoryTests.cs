@@ -89,7 +89,12 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void GetCardById_ValidId_ReturnsCorrectCard()
         {
             // Arrange
-            var card = new MonsterCard("Elf", 30, Element.Water, Species.Elf) { Id = Guid.NewGuid() };
+            var user = CreateTestUser("testuser2", "password123");
+            var card = new MonsterCard("Elf", 30, Element.Water, Species.Elf)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user!.Id
+            };
             _cardRepository.AddCard(card);
 
             // Act
@@ -105,14 +110,22 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void GetCardsByUserId_ValidUserId_ReturnsCards()
         {
             // Arrange
-            var userId = 1;
-            var card1 = new MonsterCard("Goblin", 20, Element.Earth, Species.Goblin) { Id = Guid.NewGuid(), OwnerId = userId };
-            var card2 = new MonsterCard("Elf", 40, Element.Water, Species.Elf) { Id = Guid.NewGuid(), OwnerId = userId };
+            var user = CreateTestUser("testuser3", "password123");
+            var card1 = new MonsterCard("Goblin", 20, Element.Earth, Species.Goblin)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user!.Id
+            };
+            var card2 = new MonsterCard("Elf", 40, Element.Water, Species.Elf)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user!.Id
+            };
             _cardRepository.AddCard(card1);
             _cardRepository.AddCard(card2);
 
             // Act
-            var userCards = _cardRepository.GetCardsByUserId(userId);
+            var userCards = _cardRepository.GetCardsByUserId(user.Id);
 
             // Assert
             Assert.That(userCards.Count, Is.EqualTo(2));
