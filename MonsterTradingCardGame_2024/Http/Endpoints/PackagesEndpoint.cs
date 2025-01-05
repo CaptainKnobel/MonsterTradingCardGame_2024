@@ -1,4 +1,5 @@
 ﻿using MonsterTradingCardGame_2024.Http;
+using MonsterTradingCardGame_2024.Models;
 using MonsterTradingCardGame_2024.Business_Logic;
 using Newtonsoft.Json;
 using System;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MonsterTradingCardGame_2024.Models;
 
 namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
@@ -25,6 +25,14 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             if (rq.Method == HttpMethod.POST)
             {
                 // Admin should be able to add packages
+                // Verify if the request is authorized
+                var authHeader = rq.Headers["Authorization"];
+                if (authHeader == null || authHeader != "Bearer admin-mtcgToken")
+                {
+                    rs.SetClientError("Unauthorized: Only admin can create packages", 403);
+                    return true;
+                }
+
                 if (string.IsNullOrWhiteSpace(rq.Content))
                 {
                     rs.SetClientError("Package data is missing or invalid", 400);
@@ -34,7 +42,11 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 try
                 {
                     // Deserialize the content into a CardPackage object
-                    var package = JsonConvert.DeserializeObject<List<Card>>(rq.Content);
+                    var package = JsonConvert.DeserializeObject<List<Card>>(rq.Content, new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.None,
+                        Converters = { new JsonConversion.CardConverter() }
+                    });
 
                     // Validate the package
                     if (package == null || package.Count != 5)

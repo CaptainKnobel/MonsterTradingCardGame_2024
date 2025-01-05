@@ -1,12 +1,16 @@
 ﻿using MonsterTradingCardGame_2024.Enums;
+using MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MonsterTradingCardGame_2024.Models
 {
+    [JsonConverter(typeof(CardConverter))]
     public abstract class Card
     {
         public Guid Id { get; set; }
