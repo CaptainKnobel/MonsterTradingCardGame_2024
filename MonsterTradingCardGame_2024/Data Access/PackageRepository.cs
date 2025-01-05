@@ -137,7 +137,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Name, Damage, ElementType, Species, CardType FROM Cards WHERE Id = ANY(@CardIds);";
+            command.CommandText = "SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId FROM Cards WHERE Id = ANY(@CardIds);";
             command.Parameters.AddWithValue("@CardIds", cardIds);
 
             using var reader = command.ExecuteReader();
@@ -149,15 +149,16 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var damage = reader.GetDouble(2);
                 var elementType = (Element)reader.GetInt32(3);
                 var cardType = (CardType)reader.GetInt32(5);
+                var ownerId = reader.GetGuid(6);
 
                 if (cardType == CardType.Monster)
                 {
                     var species = (Species)reader.GetInt32(4);
-                    cards.Add(new MonsterCard(name, damage, elementType, species, id));
+                    cards.Add(new MonsterCard(name, damage, elementType, species, ownerId));
                 }
                 else
                 {
-                    cards.Add(new SpellCard(name, damage, elementType, id));
+                    cards.Add(new SpellCard(name, damage, elementType, ownerId));
                 }
             }
 
