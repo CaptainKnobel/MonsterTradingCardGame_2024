@@ -90,17 +90,19 @@ namespace MonsterTradingCardGame_2024.Data_Access
                             var wins = reader.GetInt32(6);
                             var losses = reader.GetInt32(7);
 
-                            if (token == null || token == string.Empty)
+                            if (string.IsNullOrEmpty(token))
                             {
                                 token = GenerateToken(username);
 
-                                using (var updateCommand = connection.CreateCommand())
-                                {
-                                    updateCommand.CommandText = "UPDATE Users SET Token = @Token WHERE Id = @Id";
-                                    updateCommand.Parameters.AddWithValue("Token", token);
-                                    updateCommand.Parameters.AddWithValue("Id", id);
-                                    updateCommand.ExecuteNonQuery();
-                                }
+                                // Separate Verbindung für das Update verwenden
+                                using var updateConnection = new NpgsqlConnection(_connectionString);
+                                updateConnection.Open();
+
+                                using var updateCommand = updateConnection.CreateCommand();
+                                updateCommand.CommandText = "UPDATE Users SET Token = @Token WHERE Id = @Id";
+                                updateCommand.Parameters.AddWithValue("Token", token);
+                                updateCommand.Parameters.AddWithValue("Id", id);
+                                updateCommand.ExecuteNonQuery();
                             }
 
                             return new User(id, username, password, coins, token ?? string.Empty, elo, wins, losses);
