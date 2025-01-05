@@ -116,8 +116,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
         {
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType)
-                VALUES (@Id, @Name, @Damage, @ElementType, @CardType)
+                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId, Locked)
+                VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId, @Locked)
                 ON CONFLICT (Id) DO NOTHING;
             ";
             command.Parameters.AddWithValue("@Id", card.Id);
@@ -125,6 +125,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.Parameters.AddWithValue("@Damage", card.Damage);
             command.Parameters.AddWithValue("@ElementType", (int)card.ElementType);
             command.Parameters.AddWithValue("@CardType", (int)card.CardType);
+            command.Parameters.AddWithValue("@OwnerId", card.OwnerId); // OwnerId hinzugefügt
+            command.Parameters.AddWithValue("@Locked", card.Locked);  // Locked hinzugefügt
 
             command.ExecuteNonQuery();
         }

@@ -27,7 +27,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion
 
             // GUIDs auslesen oder generieren
             Guid id = Guid.TryParse(jsonObject["Id"]?.Value<string>(), out var parsedId) ? parsedId : Guid.NewGuid();
-            Guid ownerId = jsonObject["OwnerId"]?.Value<Guid>() ?? Guid.NewGuid();
+            Guid ownerId = Guid.TryParse(jsonObject["OwnerId"]?.Value<string>(), out var parsedOwnerId) ? parsedOwnerId : Guid.NewGuid();
 
             // Weitere Felder auslesen oder ableiten
             var cardType = jsonObject["CardType"]?.Value<int>() != null
