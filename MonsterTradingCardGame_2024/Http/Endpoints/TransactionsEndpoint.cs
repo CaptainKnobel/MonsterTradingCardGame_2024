@@ -1,5 +1,6 @@
 ﻿using MonsterTradingCardGame_2024.Business_Logic;
 using MonsterTradingCardGame_2024.Data_Access;
+using MonsterTradingCardGame_2024.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -38,13 +39,26 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                     // Call the Business Logic to handle purchasing a package
                     var (isSuccess, package, errorMessage) = _transactionHandler.BuyPackage(token);
 
-                    if (isSuccess)
+                    if (isSuccess && package != null)
                     {
-                        rs.SetSuccess(JsonConvert.SerializeObject(new
+                        var response = new
                         {
                             message = "Package purchased successfully",
-                            package = package
-                        }, new JsonSerializerSettings { Formatting = Formatting.Indented }), 201);
+                            cards = package.Select(card => new
+                            {
+                                card.Id,
+                                card.Name,
+                                card.Damage,
+                                card.ElementType,
+                                card.CardType,
+                                card.OwnerId
+                            }).ToList()
+                        };
+
+                        rs.SetSuccess(JsonConvert.SerializeObject(response, new JsonSerializerSettings
+                        {
+                            Formatting = Formatting.Indented
+                        }), 201);
                     }
                     else
                     {

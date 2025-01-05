@@ -42,7 +42,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
         }
 
         // Retrieve an available package (if any exists)
-        public CardPackage? GetAvailablePackage()
+        public List<Card>? GetAvailablePackage()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -58,7 +58,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
                 var cards = GetCardsByIds(cardIds);
                 DeletePackageById(packageId);   // Remove it from the available list
-                return new CardPackage(cards);
+                return cards;
             }
 
             return null;  // No packages available
@@ -197,6 +197,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 }
 
                 transaction.Commit();
+                Console.WriteLine($"Success!");
                 return true;
             }
             catch (Exception ex)

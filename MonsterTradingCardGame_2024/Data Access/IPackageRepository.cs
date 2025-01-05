@@ -10,7 +10,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
     public interface IPackageRepository
     {
         Guid? GetAdminId();
-        CardPackage? GetAvailablePackage();
+        List<Card>? GetAvailablePackage();
         bool AddPackage(CardPackage package);
         int GetAvailablePackageCount();
         List<Card> GetCardsByIds(Guid[] cardIds);

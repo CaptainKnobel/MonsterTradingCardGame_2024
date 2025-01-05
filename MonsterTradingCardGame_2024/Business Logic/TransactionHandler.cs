@@ -20,7 +20,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             _packageRepository = packageRepository;
         }
 
-        public (bool IsSuccess, CardPackage? Package, string? ErrorMessage) BuyPackage(string token)
+        public (bool IsSuccess, List<Card>? PurchasedCards, string? ErrorMessage) BuyPackage(string token)
         {
             // 1. Validate the user by token
             var user = _userHandler.FindUserByToken(token);
@@ -36,14 +36,14 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             }
 
             // 3. Check if packages are available
-            var package = _packageRepository.GetAvailablePackage();
-            if (package == null)
+            List<Card>? cards = _packageRepository.GetAvailablePackage();
+            if (cards == null)
             {
                 return (false, null, "No packages available for purchase"); // No packages available
             }
 
             // 4. Add all the cards from the package to the user's stack in the database
-            var transferSuccess = _packageRepository.TransferOwnership(package.Cards, user.Id);
+            var transferSuccess = _packageRepository.TransferOwnership(cards, user.Id);
             if (!transferSuccess)
             {
                 return (false, null, "Failed to transfer ownership of the package");
@@ -56,7 +56,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             }
 
             // 5. Successful return of the Package
-            return (true, package, null);
+            return (true, cards, null);
         }
     }
 }

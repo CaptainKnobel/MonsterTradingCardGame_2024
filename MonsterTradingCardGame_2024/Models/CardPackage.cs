@@ -12,14 +12,7 @@ namespace MonsterTradingCardGame_2024.Models
 
         public CardPackage(List<Card> cards)
         {
-            if (cards.Count == 5)
-            {
-                Cards = cards;
-            }
-            else
-            {
-                throw new ArgumentException("A package must contain exactly 5 cards.");
-            }
+            Cards = cards;
         }
     }
 }
