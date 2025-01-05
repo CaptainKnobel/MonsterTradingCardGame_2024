@@ -17,7 +17,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             _cardRepository = cardRepository;
         }
 
-        public IEnumerable<Card> GetUserCards(Guid userId)
+        public List<Card> GetUserCards(Guid userId)
         {
             return _cardRepository.GetCardsByUserId(userId);
         }

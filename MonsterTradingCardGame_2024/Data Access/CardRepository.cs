@@ -18,7 +18,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             _connectionString = connectionString;
         }
 
-        public IEnumerable<Card> GetCardsByUserId(Guid userId)
+        public List<Card> GetCardsByUserId(Guid userId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -42,6 +42,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var cardType = (CardType)reader.GetInt32(5);
                 var ownerId = reader.GetGuid(6);
                 var locked = reader.GetBoolean(7);
+
+                Console.WriteLine($"Card Retrieved: ID={id}, OwnerID={ownerId}, Name={name}");
 
                 if (cardType == CardType.Monster)
                 {

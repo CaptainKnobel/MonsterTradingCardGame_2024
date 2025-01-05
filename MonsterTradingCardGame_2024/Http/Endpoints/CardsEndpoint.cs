@@ -45,10 +45,30 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
                     // Karten des Nutzers abrufen
                     var cards = _cardHandler.GetUserCards(user.Id);
+                    Console.WriteLine($"User {user.Id} has {cards.Count()} cards.");
+                    foreach (var card in cards)
+                    {
+                        Console.WriteLine($"Card: {card.Id}, Name: {card.Name}, OwnerId: {card.OwnerId}");
+                    }
 
                     // Karten als JSON zurückgeben
+                    var response = new
+                    {
+                        message = "Cards retrieved successfully",
+                        cards = cards.Select(card => new
+                        {
+                            card.Id,
+                            card.Name,
+                            card.Damage,
+                            card.ElementType,
+                            card.CardType,
+                            card.OwnerId,
+                            card.Locked
+                        }).ToList()
+                    };
+
                     rs.SetJsonContentType();
-                    rs.Content = JsonConvert.SerializeObject(cards, new JsonSerializerSettings
+                    rs.Content = JsonConvert.SerializeObject(response, new JsonSerializerSettings
                     {
                         Formatting = Formatting.Indented
                     });
