@@ -53,8 +53,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var reader = command.ExecuteReader(); 
             if (reader.Read())
             {
-                var packageId = reader.GetGuid(0);
-                var cardIds = reader.GetFieldValue<Guid[]>(1);
+                var packageId = reader.GetGuid(0);              // Reads the UUID from column from Id
+                var cardIds = reader.GetFieldValue<Guid[]>(1);  // Reads the UUID-Array colimn from CardIds
 
                 var cards = GetCardsByIds(cardIds);
                 DeletePackageById(packageId);   // Remove it from the available list

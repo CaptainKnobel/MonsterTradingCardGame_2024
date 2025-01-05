@@ -43,7 +43,7 @@ namespace MonsterTradingCardGame_2024.Infrastructure.Database
                             );
 
                             CREATE TABLE IF NOT EXISTS Packages (
-                                Id SERIAL PRIMARY KEY,
+                                Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                                 CardIds UUID[] NOT NULL
                             );
 
