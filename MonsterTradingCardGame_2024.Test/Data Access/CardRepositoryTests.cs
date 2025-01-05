@@ -86,6 +86,28 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         }
 
         [Test]
+        public void AddCard_SpellCard_SuccessfullyAddsCard()
+        {
+            // Arrange
+            var user = CreateTestUser("testuser4", "password123");
+            var card = new SpellCard("Fireball", 40, Element.Fire)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user.Id
+            };
+
+            // Act
+            Assert.DoesNotThrow(() => _cardRepository.AddCard(card));
+
+            // Assert
+            var retrievedCard = _cardRepository.GetCardById(card.Id);
+            Assert.That(retrievedCard, Is.Not.Null);
+            Assert.That(retrievedCard?.Name, Is.EqualTo(card.Name));
+            Assert.That(retrievedCard?.ElementType, Is.EqualTo(card.ElementType));
+            Assert.That(retrievedCard?.OwnerId, Is.EqualTo(user.Id));
+        }
+
+        [Test]
         public void GetCardById_ValidId_ReturnsCorrectCard()
         {
             // Arrange
@@ -104,6 +126,29 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             Assert.That(retrievedCard, Is.Not.Null);
             Assert.That(retrievedCard?.Id, Is.EqualTo(card.Id));
             Assert.That(retrievedCard?.ElementType, Is.EqualTo(card.ElementType));
+        }
+
+        [Test]
+        public void GetCardById_MonsterCard_ReturnsCorrectCard()
+        {
+            // Arrange
+            var user = CreateTestUser("testuser5", "password123");
+            var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user.Id
+            };
+            _cardRepository.AddCard(card);
+
+            // Act
+            var retrievedCard = _cardRepository.GetCardById(card.Id);
+
+            // Assert
+            Assert.That(retrievedCard, Is.Not.Null);
+            Assert.That(retrievedCard?.Id, Is.EqualTo(card.Id));
+            Assert.That(retrievedCard?.ElementType, Is.EqualTo(card.ElementType));
+            Assert.That(retrievedCard, Is.TypeOf<MonsterCard>());
+            Assert.That(((MonsterCard)retrievedCard!).MonsterSpecies, Is.EqualTo(Species.Ork));
         }
 
         [Test]
@@ -127,19 +172,37 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             // Act
             var userCards = _cardRepository.GetCardsByUserId(user.Id);
 
-            // Debugging-Ausgabe
-            int counter = 0;
-            foreach (var card in userCards)
-            {
-                counter++;
-                TestContext.Progress.WriteLine($"Card ID: {card.Id}, Name: {card.Name}, OwnerId: {card.OwnerId}");
-            }
-            TestContext.Progress.WriteLine($"Retrieved Cards Count: {counter}");
-
             // Assert
             Assert.That(userCards.Count, Is.EqualTo(2));
             Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card1.Id));
             Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card2.Id));
+        }
+
+        [Test]
+        public void GetCardsByUserId_ReturnsAllCardTypes()
+        {
+            // Arrange
+            var user = CreateTestUser("testuser6", "password123");
+            var card1 = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user.Id
+            };
+            var card2 = new SpellCard("Fireball", 40, Element.Fire)
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = user.Id
+            };
+            _cardRepository.AddCard(card1);
+            _cardRepository.AddCard(card2);
+
+            // Act
+            var userCards = _cardRepository.GetCardsByUserId(user.Id);
+
+            // Assert
+            Assert.That(userCards.Count, Is.EqualTo(2));
+            Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card1.Id && c is MonsterCard));
+            Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card2.Id && c is SpellCard));
         }
     }
 }
