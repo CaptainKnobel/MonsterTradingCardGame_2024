@@ -127,6 +127,15 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             // Act
             var userCards = _cardRepository.GetCardsByUserId(user.Id);
 
+            // Debugging-Ausgabe
+            int counter = 0;
+            foreach (var card in userCards)
+            {
+                counter++;
+                Console.WriteLine($"Card ID: {card.Id}, Name: {card.Name}, OwnerId: {card.OwnerId}");
+            }
+            Console.WriteLine($"Retrieved Cards Count: {counter}");
+
             // Assert
             Assert.That(userCards.Count, Is.EqualTo(2));
             Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card1.Id));
