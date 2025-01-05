@@ -126,6 +126,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             if (user.Coins >= amount)   // Check if user has enough coins. (A package costs 5 coins.)
             {
                 user.Coins -= amount;
+                _userRepository.UpdateUser(user);
                 return true;
             }
             return false;   // User doesn't have enough coins

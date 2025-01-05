@@ -191,6 +191,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     command.Parameters.AddWithValue("@NewOwnerId", newOwnerId);
                     command.Parameters.AddWithValue("@CardId", card.Id);
 
+                    Console.WriteLine($"Transferring card {card.Id} to owner {newOwnerId}");
                     command.ExecuteNonQuery();
                 }
 

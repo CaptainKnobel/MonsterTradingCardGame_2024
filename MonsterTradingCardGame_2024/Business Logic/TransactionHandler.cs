@@ -12,6 +12,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
     {
         private readonly UserHandler _userHandler;
         private readonly IPackageRepository _packageRepository;
+        private const int packageCost = 5;
 
         public TransactionHandler(UserHandler userHandler, IPackageRepository packageRepository)
         {
@@ -28,10 +29,10 @@ namespace MonsterTradingCardGame_2024.Business_Logic
                 return (false, null, "Invalid authentication token");
             }
 
-            // 2. Deduct the cost from the user's coins
-            if (!_userHandler.SpendCoins(user, 5))
+            // 2. Check if user has enough coins
+            if(user.Coins < packageCost)
             {
-                return (false, null, "Not enough money to buy the package"); // Not enough coins
+                return (false, null, "Not enough money to buy the package");
             }
 
             // 3. Check if packages are available
@@ -41,10 +42,17 @@ namespace MonsterTradingCardGame_2024.Business_Logic
                 return (false, null, "No packages available for purchase"); // No packages available
             }
 
-            // 4. Add all the cards from the package to the user's stack
-            foreach (var card in package.Cards)
+            // 4. Add all the cards from the package to the user's stack in the database
+            var transferSuccess = _packageRepository.TransferOwnership(package.Cards, user.Id);
+            if (!transferSuccess)
             {
-                _userHandler.AddCardToStack(user, card);
+                return (false, null, "Failed to transfer ownership of the package");
+            }
+
+            // 5. Deduct the cost from the user's coins
+            if (!_userHandler.SpendCoins(user, packageCost))
+            {
+                return (false, null, "Not enough money to buy the package"); // Not enough coins
             }
 
             // 5. Successful return of the Package
