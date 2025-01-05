@@ -46,6 +46,7 @@ namespace MonsterTradingCardGame_2024
 
                 // Initialize Handlers
                 UserHandler userHandler = new UserHandler(userRepository);
+                PackageHandler packageHandler = new PackageHandler(packageRepository);
                 TransactionHandler transactionHandler = new TransactionHandler(userHandler, packageRepository);
                 CardHandler cardHandler = new CardHandler(cardRepository);
                 DeckHandler deckHandler = new DeckHandler(deckRepository, cardRepository);
@@ -61,7 +62,7 @@ namespace MonsterTradingCardGame_2024
                 // Register Endpoints for Http Server
                 server.RegisterEndpoint("users", new UsersEndpoint(userHandler));                       // Registers Endpoint for user registration
                 server.RegisterEndpoint("sessions", new SessionsEndpoint(userHandler));                 // Registers Endpoint for user login
-                server.RegisterEndpoint("packages", new PackagesEndpoint(packageRepository));           // Registers Endpoint for card packages (creating packages)
+                server.RegisterEndpoint("packages", new PackagesEndpoint(packageHandler));              // Registers Endpoint for card packages (creating packages)
                 server.RegisterEndpoint("transactions", new TransactionsEndpoint(transactionHandler));  // Registers Endpoint for transactions regarding card packages
                 server.RegisterEndpoint("cards", new CardsEndpoint(userHandler, cardHandler));          // Registers Endpoint for card listing
                 server.RegisterEndpoint("deck", new DeckEndpoint(userHandler, deckHandler));            // Registers Endpoint for managing the user's deck

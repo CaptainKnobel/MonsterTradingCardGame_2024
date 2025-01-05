@@ -1,5 +1,5 @@
-﻿using MonsterTradingCardGame_2024.Data_Access;
-using MonsterTradingCardGame_2024.Models;
+﻿using MonsterTradingCardGame_2024.Http;
+using MonsterTradingCardGame_2024.Business_Logic;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,16 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MonsterTradingCardGame_2024.Models;
 
 namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
     internal class PackagesEndpoint : IHttpEndpoint
     {
-        private readonly IPackageRepository _packageRepository;
+        private readonly PackageHandler _packageHandler;
 
-        public PackagesEndpoint(IPackageRepository packageRepository)
+        public PackagesEndpoint(PackageHandler packageHandler)
         {
-            _packageRepository = packageRepository;
+            _packageHandler = packageHandler;
         }
 
         public bool HandleRequest(HttpRequest rq, HttpResponse rs)
@@ -33,22 +34,19 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 try
                 {
                     // Deserialize the content into a CardPackage object
-                    var package = JsonConvert.DeserializeObject<CardPackage>(rq.Content, new JsonSerializerSettings
-                    {
-                        TypeNameHandling = TypeNameHandling.Auto
-                    });
+                    var package = JsonConvert.DeserializeObject<List<Card>>(rq.Content);
 
                     // Validate the package
-                    if (package == null || package.Cards.Count != 5)
+                    if (package == null || package.Count != 5)
                     {
                         rs.SetClientError("A package must contain exactly 5 cards", 400);
                         return true;
                     }
 
-                    // Add the package to the repository
-                    var repository = new PackageRepository("YourDatabaseConnectionString");
+                    // Add the package to the repository via the PackageHandler
+                    bool success = _packageHandler.CreatePackage(package);
 
-                    if (repository.AddPackage(package))
+                    if (success)
                     {
                         rs.SetSuccess("Package created successfully", 201);
                     }
@@ -68,9 +66,9 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                     rs.SetServerError($"An unexpected error occurred: {ex.Message}");
                 }
 
-                return true;
+                return true;    // Success!
             }
-            return false;
+            return false;   // Unhandled request
         }
     }
 }
