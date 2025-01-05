@@ -24,6 +24,19 @@ namespace MonsterTradingCardGame_2024.Business_Logic
                 return false;
             }
 
+            var adminId = _packageRepository.GetAdminId();
+
+            if (!adminId.HasValue)
+            {
+                Console.WriteLine("Admin ID does not exist.");
+                return false; // Abbrechen, wenn kein Admin existiert
+            }
+
+            foreach (var card in cards)
+            {
+                card.OwnerId = adminId.Value; // Setze den Admin als Besitzer
+            }
+
             var package = new CardPackage(cards);
             return _packageRepository.AddPackage(package);
         }

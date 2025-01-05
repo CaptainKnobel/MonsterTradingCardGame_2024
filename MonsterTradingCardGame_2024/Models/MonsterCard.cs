@@ -11,8 +11,8 @@ namespace MonsterTradingCardGame_2024.Models
     {
         public Species MonsterSpecies { get; set; }
 
-        public MonsterCard(string name, double damage, Element elementType, Species monsterSpecies, int ownerId = 0)
-            : base(name, damage, elementType, CardType.Monster, ownerId)
+        public MonsterCard(string name, double damage, Element elementType, Species monsterSpecies, Guid? ownerId)
+            : base(name, damage, elementType, CardType.Monster, ownerId ?? Guid.NewGuid())
         {
             this.MonsterSpecies = monsterSpecies;
         }

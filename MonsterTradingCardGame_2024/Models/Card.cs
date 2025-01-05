@@ -18,10 +18,10 @@ namespace MonsterTradingCardGame_2024.Models
         public double Damage { get; set; }
         public Element ElementType { get; set; }
         public CardType CardType { get; set; }
-        public int OwnerId { get; set; }
+        public Guid OwnerId { get; set; }
         public bool Locked { get; set; }
 
-        protected Card(string name, double damage, Element elementType, CardType cardType, int ownerId = 0)
+        protected Card(string name, double damage, Element elementType, CardType cardType, Guid ownerId)
         {
             this.Id = Guid.NewGuid();
             this.Name = name;

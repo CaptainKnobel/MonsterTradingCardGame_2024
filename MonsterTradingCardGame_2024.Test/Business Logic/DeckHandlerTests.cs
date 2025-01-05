@@ -30,7 +30,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetDeckByUserId_ValidUserId_ReturnsDeck()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid(); // Guid statt int
             var expectedDeck = new List<Card>
             {
                 new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon, userId),
@@ -52,7 +52,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetDeckByUserId_InvalidUserId_ReturnsEmptyDeck()
         {
             // Arrange
-            var userId = 99;
+            var userId = Guid.NewGuid();
             _deckRepository.GetDeckByUserId(userId).Returns(new List<Card>());
 
             // Act
@@ -66,7 +66,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void ValidateDeck_ValidDeck_ReturnsTrue()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var cardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             var userCards = new List<Card>
             {
@@ -89,7 +89,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void ValidateDeck_InvalidDeckSize_ReturnsFalse()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var cardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }; // Only 2 cards
 
             // Act
@@ -103,7 +103,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void ValidateDeck_InvalidOwnership_ReturnsFalse()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var cardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             var userCards = new List<Card>
             {
@@ -124,7 +124,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void UpdateDeck_ValidDeck_ReturnsTrue()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var cardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             var userCards = new List<Card>
             {
@@ -148,7 +148,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void UpdateDeck_InvalidDeck_ThrowsException()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var cardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             _deckRepository.UpdateDeck(userId, cardIds).Returns(false);
 

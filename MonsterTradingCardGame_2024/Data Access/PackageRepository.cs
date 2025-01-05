@@ -12,11 +12,34 @@ namespace MonsterTradingCardGame_2024.Data_Access
     internal class PackageRepository : IPackageRepository
     {
         private readonly string _connectionString;
+
         public PackageRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
+        public Guid? GetAdminId()
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT Id FROM Users WHERE Token = 'admin-mtcgToken';";
+
+            var result = command.ExecuteScalar();
+
+            if (result == null || result == DBNull.Value)
+            {
+                return null;
+            }
+
+            if (Guid.TryParse(result.ToString(), out var adminId))
+            {
+                return adminId;
+            }
+
+            return null;
+        }
 
         // Retrieve an available package (if any exists)
         public CardPackage? GetAvailablePackage()
@@ -30,7 +53,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var reader = command.ExecuteReader(); 
             if (reader.Read())
             {
-                var packageId = reader.GetInt32(0);
+                var packageId = reader.GetGuid(0);
                 var cardIds = reader.GetFieldValue<Guid[]>(1);
 
                 var cards = GetCardsByIds(cardIds);
@@ -89,7 +112,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return Convert.ToInt32(command.ExecuteScalar());
         }
 
-        private void AddCard(Card card, NpgsqlConnection connection)
+        public void AddCard(Card card, NpgsqlConnection connection)
         {
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -106,7 +129,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.ExecuteNonQuery();
         }
 
-        private List<Card> GetCardsByIds(Guid[] cardIds)
+        public List<Card> GetCardsByIds(Guid[] cardIds)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -128,18 +151,18 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 if (cardType == CardType.Monster)
                 {
                     var species = (Species)reader.GetInt32(4);
-                    cards.Add(new MonsterCard(name, damage, elementType, species));
+                    cards.Add(new MonsterCard(name, damage, elementType, species, id));
                 }
                 else
                 {
-                    cards.Add(new SpellCard(name, damage, elementType));
+                    cards.Add(new SpellCard(name, damage, elementType, id));
                 }
             }
 
             return cards;
         }
 
-        internal void DeletePackageById(int packageId)
+        public void DeletePackageById(Guid packageId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -151,5 +174,33 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.ExecuteNonQuery();
         }
 
+        public bool TransferOwnership(List<Card> cards, Guid newOwnerId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+            try
+            {
+                foreach (var card in cards)
+                {
+                    using var command = connection.CreateCommand();
+                    command.CommandText = "UPDATE Cards SET OwnerId = @NewOwnerId WHERE Id = @CardId;";
+                    command.Parameters.AddWithValue("@NewOwnerId", newOwnerId);
+                    command.Parameters.AddWithValue("@CardId", card.Id);
+
+                    command.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Console.WriteLine($"Error transferring ownership: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

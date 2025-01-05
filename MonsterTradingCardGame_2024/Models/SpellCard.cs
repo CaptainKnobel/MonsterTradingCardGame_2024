@@ -10,8 +10,8 @@ namespace MonsterTradingCardGame_2024.Models
     public class SpellCard : Card
     {
 
-        public SpellCard(string name, double damage, Element elementType, int ownerId = 0)
-            : base(name, damage, elementType, CardType.Spell, ownerId)
+        public SpellCard(string name, double damage, Element elementType, Guid? ownerId)
+            : base(name, damage, elementType, CardType.Spell, ownerId ?? Guid.NewGuid())
         {
 
         }

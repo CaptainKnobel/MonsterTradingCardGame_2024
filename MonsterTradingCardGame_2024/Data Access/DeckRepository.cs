@@ -18,7 +18,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             _connectionString = connectionString;
         }
 
-        public IEnumerable<Card> GetDeckByUserId(int userId)
+        public IEnumerable<Card> GetDeckByUserId(Guid userId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -44,18 +44,18 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
                 if (cardType == CardType.Monster)
                 {
-                    cards.Add(new MonsterCard(name, damage, elementType, Species.Dragon)); // TODO: Spezies anpassen
+                    cards.Add(new MonsterCard(name, damage, elementType, Species.Dragon, id)); // TODO: Spezies anpassen
                 }
                 else
                 {
-                    cards.Add(new SpellCard(name, damage, elementType));
+                    cards.Add(new SpellCard(name, damage, elementType, id));
                 }
             }
 
             return cards;
         }
 
-        public bool UpdateDeck(int userId, IEnumerable<Guid> cardIds)
+        public bool UpdateDeck(Guid userId, IEnumerable<Guid> cardIds)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();

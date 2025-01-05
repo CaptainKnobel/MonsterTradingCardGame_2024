@@ -41,9 +41,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void GetDeckByUserId_ValidUserId_ReturnsDeck()
         {
             // Arrange
-            var userId = 1;
-            var card1 = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon) { Id = Guid.NewGuid() };
-            var card2 = new SpellCard("Fireball", 40, Element.Fire) { Id = Guid.NewGuid() };
+            var userId = Guid.NewGuid();
+            var card1 = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon, userId) { Id = Guid.NewGuid() };
+            var card2 = new SpellCard("Fireball", 40, Element.Fire, userId) { Id = Guid.NewGuid() };
             var deckCardIds = new List<Guid> { card1.Id, card2.Id };
 
             _deckRepository.UpdateDeck(userId, deckCardIds);
@@ -61,9 +61,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void UpdateDeck_ValidDeck_SuccessfullyUpdatesDeck()
         {
             // Arrange
-            var userId = 2;
-            var card1 = new MonsterCard("Elf", 30, Element.Earth, Species.Elf) { Id = Guid.NewGuid() };
-            var card2 = new SpellCard("WaterSplash", 25, Element.Water) { Id = Guid.NewGuid() };
+            var userId = Guid.NewGuid();
+            var card1 = new MonsterCard("Elf", 30, Element.Earth, Species.Elf, userId) { Id = Guid.NewGuid() };
+            var card2 = new SpellCard("WaterSplash", 25, Element.Water, userId) { Id = Guid.NewGuid() };
             var newDeckCardIds = new List<Guid> { card1.Id, card2.Id };
 
             // Act

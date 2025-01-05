@@ -21,7 +21,7 @@ namespace MonsterTradingCardGame_2024.Infrastructure.Database
                     {
                         command.CommandText = @"
                             CREATE TABLE IF NOT EXISTS Users (
-                                Id SERIAL PRIMARY KEY,
+                                Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                                 Username VARCHAR(50) NOT NULL UNIQUE,
                                 Password VARCHAR(50) NOT NULL,
                                 Coins INT NOT NULL DEFAULT 20,
@@ -38,7 +38,7 @@ namespace MonsterTradingCardGame_2024.Infrastructure.Database
                                 ElementType INT NOT NULL,
                                 Species INT DEFAULT 0,
                                 CardType INT NOT NULL,
-                                OwnerId INT NOT NULL REFERENCES Users(Id),
+                                OwnerId UUID NOT NULL REFERENCES Users(Id),
                                 Locked BOOLEAN DEFAULT FALSE
                             );
 
@@ -48,7 +48,7 @@ namespace MonsterTradingCardGame_2024.Infrastructure.Database
                             );
 
                             CREATE TABLE IF NOT EXISTS Decks (
-                                UserId INT PRIMARY KEY REFERENCES Users(Id),
+                                UserId UUID PRIMARY KEY REFERENCES Users(Id),
                                 CardIds UUID[] NOT NULL
                             );
 

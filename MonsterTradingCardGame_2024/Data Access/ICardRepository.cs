@@ -9,7 +9,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 {
     public interface ICardRepository
     {
-        IEnumerable<Card> GetCardsByUserId(int userId);
+        IEnumerable<Card> GetCardsByUserId(Guid userId);
         Card? GetCardById(Guid cardId);
         bool AddCard(Card card);
         void UpdateCard(Card card);

@@ -70,7 +70,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             var user = CreateTestUser("testuser", "password123");
-            var card = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon)
+            var card = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user!.Id
@@ -90,7 +90,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             var user = CreateTestUser("testuser4", "password123");
-            var card = new SpellCard("Fireball", 40, Element.Fire)
+            var card = new SpellCard("Fireball", 40, Element.Fire, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user.Id
@@ -112,7 +112,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             var user = CreateTestUser("testuser2", "password123");
-            var card = new MonsterCard("Elf", 30, Element.Water, Species.Elf)
+            var card = new MonsterCard("Elf", 30, Element.Water, Species.Elf, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user!.Id
@@ -133,7 +133,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             var user = CreateTestUser("testuser5", "password123");
-            var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork)
+            var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user.Id
@@ -156,12 +156,12 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             var user = CreateTestUser("testuser3", "password123");
-            var card1 = new MonsterCard("Goblin", 20, Element.Earth, Species.Goblin)
+            var card1 = new MonsterCard("Goblin", 20, Element.Earth, Species.Goblin, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user!.Id
             };
-            var card2 = new MonsterCard("Elf", 40, Element.Water, Species.Elf)
+            var card2 = new MonsterCard("Elf", 40, Element.Water, Species.Elf, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user!.Id
@@ -183,12 +183,12 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             var user = CreateTestUser("testuser6", "password123");
-            var card1 = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon)
+            var card1 = new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user.Id
             };
-            var card2 = new SpellCard("Fireball", 40, Element.Fire)
+            var card2 = new SpellCard("Fireball", 40, Element.Fire, user.Id)
             {
                 Id = Guid.NewGuid(),
                 OwnerId = user.Id

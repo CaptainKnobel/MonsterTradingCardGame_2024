@@ -18,7 +18,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             _connectionString = connectionString;
         }
 
-        public IEnumerable<Card> GetCardsByUserId(int userId)
+        public IEnumerable<Card> GetCardsByUserId(Guid userId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -40,18 +40,18 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var damage = reader.GetDouble(2);
                 var elementType = (Element)reader.GetInt32(3);
                 var cardType = (CardType)reader.GetInt32(5);
-                var ownerId = reader.GetInt32(6);
+                var ownerId = reader.GetGuid(6);
                 var locked = reader.GetBoolean(7);
 
                 if (cardType == CardType.Monster)
                 {
                     var species = (Species)reader.GetInt32(4);
-                    var monsterCard = new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked };
+                    var monsterCard = new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked, Id = id };
                     cards.Add(monsterCard);
                 }
                 else
                 {
-                    var spellCard = new SpellCard(name, damage, elementType, ownerId) { Locked = locked };
+                    var spellCard = new SpellCard(name, damage, elementType, ownerId) { Locked = locked, Id = id };
                     cards.Add(spellCard);
                 }
             }
@@ -79,17 +79,17 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var damage = reader.GetDouble(2);
                 var elementType = (Element)reader.GetInt32(3);
                 var cardType = (CardType)reader.GetInt32(5);
-                var ownerId = reader.GetInt32(6);
+                var ownerId = reader.GetGuid(6);
                 var locked = reader.GetBoolean(7);
 
                 if (cardType == CardType.Monster)
                 {
                     var species = (Species)reader.GetInt32(4);
-                    return new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked };
+                    return new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked, Id = id };
                 }
                 else
                 {
-                    return new SpellCard(name, damage, elementType, ownerId) { Locked = locked };
+                    return new SpellCard(name, damage, elementType, ownerId) { Locked = locked, Id = id };
                 }
             }
             return null;
@@ -124,7 +124,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var command = connection.CreateCommand();
             command.CommandText = @"
                 UPDATE Cards
-                SET OwnerId = @OwnerId
+                SET OwnerId = @OwnerId,
                     Locked = @Locked
                 WHERE Id = @Id
             ";

@@ -34,7 +34,7 @@ namespace MonsterTradingCardGame_2024.Models
             this.Stats = new UserStats();   // Default stats with initial values
         }
         // Constructor for loading a user from the database (with all attributes)
-        public User(int id, string username, string password, int coins, string token, int elo, int wins, int losses)
+        public User(Guid id, string username, string password, int coins, string token, int elo, int wins, int losses)
         {
             this.Id = id;
             this.Username = username;
@@ -48,7 +48,7 @@ namespace MonsterTradingCardGame_2024.Models
 
         // ----------========== [Properties] ==========----------
         // Unique user ID
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         // Username
         public string Username { get; set; }

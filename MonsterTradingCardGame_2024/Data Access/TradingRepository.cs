@@ -41,10 +41,10 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 using (var lockCommand = connection.CreateCommand())
                 {
                     lockCommand.CommandText = @"
-                UPDATE Cards
-                SET Locked = TRUE
-                WHERE Id = @CardId
-            ";
+                        UPDATE Cards
+                        SET Locked = TRUE
+                        WHERE Id = @CardId
+                    ";
                     lockCommand.Parameters.AddWithValue("@CardId", deal.CardToTrade.Id);
                     if (lockCommand.ExecuteNonQuery() == 0)
                     {
@@ -56,9 +56,9 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                INSERT INTO TradingDeals (Id, CardToTradeId, AcceptedElement, AcceptedSpecies, MinimumDamage)
-                VALUES (@Id, @CardToTradeId, @AcceptedElement, @AcceptedSpecies, @MinimumDamage)
-            ";
+                        INSERT INTO TradingDeals (Id, CardToTradeId, AcceptedElement, AcceptedSpecies, MinimumDamage)
+                        VALUES (@Id, @CardToTradeId, @AcceptedElement, @AcceptedSpecies, @MinimumDamage)
+                    ";
                     command.Parameters.AddWithValue("@Id", deal.Id);
                     command.Parameters.AddWithValue("@CardToTradeId", deal.CardToTrade.Id);
                     command.Parameters.AddWithValue("@AcceptedElement", (int)deal.AcceptedElement);
@@ -87,7 +87,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT td.Id, c.Id, c.Name, c.Damage, c.ElementType, c.Species, c.CardType, c.Locked, td.AcceptedElement, td.AcceptedSpecies, td.MinimumDamage
+                SELECT td.Id, c.Id, c.Name, c.Damage, c.ElementType, c.Species, c.CardType, c.OwnerId, c.Locked, 
+                       td.AcceptedElement, td.AcceptedSpecies, td.MinimumDamage
                 FROM TradingDeals td
                 JOIN Cards c ON td.CardToTradeId = c.Id
                 WHERE td.Id = @Id
@@ -98,6 +99,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             if (reader.Read())
             {
                 var cardType = (CardType)reader.GetInt32(6);
+                var ownerId = reader.GetGuid(7);
 
                 Card card = cardType switch
                 {
@@ -105,20 +107,22 @@ namespace MonsterTradingCardGame_2024.Data_Access
                         reader.GetString(2),            // Name
                         reader.GetDouble(3),            // Damage
                         (Element)reader.GetInt32(4),    // ElementType
-                        (Species)reader.GetInt32(5)     // Species
+                        (Species)reader.GetInt32(5),    // Species
+                        ownerId                         // OwnerId
                     )
                     {
                         Id = reader.GetGuid(1),         // Card ID
-                        Locked = reader.GetBoolean(7)   // Locked
+                        Locked = reader.GetBoolean(8)   // Locked
                     },
                     CardType.Spell => new SpellCard(
                         reader.GetString(2),            // Name
                         reader.GetDouble(3),            // Damage
-                        (Element)reader.GetInt32(4)     // ElementType
+                        (Element)reader.GetInt32(4),    // ElementType
+                        ownerId                         // OwnerId
                     )
                     {
                         Id = reader.GetGuid(1),         // Card ID
-                        Locked = reader.GetBoolean(7)   // Locked
+                        Locked = reader.GetBoolean(8)   // Locked
                     },
                     _ => throw new InvalidOperationException("Unknown card type.")
                 };
@@ -126,9 +130,9 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 return new TradingDeal(
                     reader.GetString(0),                // TradingDeal ID
                     card,
-                    (Element)reader.GetInt32(7),        // AcceptedElement
-                    (Species)reader.GetInt32(8),        // AcceptedSpecies
-                    reader.GetFloat(9)                  // MinimumDamage
+                    (Element)reader.GetInt32(9),        // AcceptedElement
+                    (Species)reader.GetInt32(10),       // AcceptedSpecies
+                    reader.GetFloat(11)                 // MinimumDamage
                 );
             }
 

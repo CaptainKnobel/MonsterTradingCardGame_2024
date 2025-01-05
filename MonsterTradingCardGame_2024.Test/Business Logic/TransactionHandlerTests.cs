@@ -48,7 +48,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void BuyPackage_NotEnoughCoins_ReturnsError()
         {
             // Arrange
-            var user = new User { Coins = 3 };
+            var user = new User { Id = Guid.NewGuid(), Coins = 3 };
             var token = "valid-token";
             _userRepository.GetUserByToken(token).Returns(user);
 
@@ -64,7 +64,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void BuyPackage_NoPackagesAvailable_ReturnsError()
         {
             // Arrange
-            var user = new User { Coins = 10 };
+            var user = new User { Id = Guid.NewGuid(), Coins = 10 };
             var token = "valid-token";
             _userRepository.GetUserByToken(token).Returns(user);
             _packageRepository.GetAvailablePackage().Returns((CardPackage)null!);
@@ -81,15 +81,15 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void BuyPackage_SuccessfullyBuysPackage_ReturnsPackage()
         {
             // Arrange
-            var user = new User { Coins = 10 };
+            var user = new User { Id = Guid.NewGuid(), Coins = 10, Stack = new CardStack() };
             var token = "valid-token";
             var cards = new List<Card>
             {
-                new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon),
-                new MonsterCard("Goblin", 20, Enums.Element.Normal, Enums.Species.Goblin),
-                new SpellCard("Fireball", 40, Enums.Element.Fire),
-                new SpellCard("WaterSplash", 30, Enums.Element.Water),
-                new MonsterCard("Elf", 25, Enums.Element.Normal, Enums.Species.Elf)
+                new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon, user.Id),
+                new MonsterCard("Goblin", 20, Element.Normal, Species.Goblin, user.Id),
+                new SpellCard("Fireball", 40, Element.Fire, user.Id),
+                new SpellCard("WaterSplash", 30, Element.Water, user.Id),
+                new MonsterCard("Elf", 25, Element.Normal, Species.Elf, user.Id)
             };
             var package = new CardPackage(cards);
 

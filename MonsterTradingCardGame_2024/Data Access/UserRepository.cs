@@ -39,29 +39,28 @@ namespace MonsterTradingCardGame_2024.Data_Access
         // Register a new user
         public bool Register(string username, string password)
         {
-            using (var connection = new NpgsqlConnection(_connectionString))
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO Users (Id, Username, Password, Coins, Token, Elo, Wins, Losses)
+                VALUES (@Id, @Username, @Password, 20, NULL, 100, 0, 0);
+            ";
+            var token = GenerateToken(username);
+            command.Parameters.AddWithValue("@Id", Guid.NewGuid());
+            command.Parameters.AddWithValue("@Username", username);
+            command.Parameters.AddWithValue("@Password", password);
+            command.Parameters.AddWithValue("@Token", token);
+
+            try
             {
-                connection.Open();
-
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = @"
-                        INSERT INTO Users (Username, Password, Token)
-                        VALUES (@username, @password, @token)";
-                    command.Parameters.AddWithValue("username", username);
-                    command.Parameters.AddWithValue("password", password);
-                    command.Parameters.AddWithValue("token", GenerateToken(username));
-
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                        return true;
-                    }
-                    catch (PostgresException)
-                    {
-                        return false;   // In case the User already exists, catch the error and return false.
-                    }
-                }
+                command.ExecuteNonQuery();
+                return true;
+            }
+            catch (PostgresException)
+            {
+                return false;   // Catch duplicate username errors
             }
         }
 
@@ -84,16 +83,27 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     {
                         if (reader.Read())
                         {
-                            return new User(
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetString(2),
-                                reader.GetInt32(3),
-                                reader.GetString(4),
-                                reader.GetInt32(5),
-                                reader.GetInt32(6),
-                                reader.GetInt32(7)
-                            );
+                            var id = reader.GetGuid(0);
+                            var coins = reader.GetInt32(3);
+                            var token = reader.IsDBNull(4) ? null : reader.GetString(4);
+                            var elo = reader.GetInt32(5);
+                            var wins = reader.GetInt32(6);
+                            var losses = reader.GetInt32(7);
+
+                            if (token == null || token == string.Empty)
+                            {
+                                token = GenerateToken(username);
+
+                                using (var updateCommand = connection.CreateCommand())
+                                {
+                                    updateCommand.CommandText = "UPDATE Users SET Token = @Token WHERE Id = @Id";
+                                    updateCommand.Parameters.AddWithValue("Token", token);
+                                    updateCommand.Parameters.AddWithValue("Id", id);
+                                    updateCommand.ExecuteNonQuery();
+                                }
+                            }
+
+                            return new User(id, username, password, coins, token ?? string.Empty, elo, wins, losses);
                         }
                     }
                 }
@@ -104,6 +114,10 @@ namespace MonsterTradingCardGame_2024.Data_Access
         // Find a user by their token
         public User? GetUserByToken(string token)
         {
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
@@ -120,16 +134,15 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     {
                         if (reader.Read())
                         {
-                            return new User(
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetString(2),
-                                reader.GetInt32(3),
-                                reader.GetString(4),
-                                reader.GetInt32(5),
-                                reader.GetInt32(6),
-                                reader.GetInt32(7)
-                            );
+                            var id = reader.GetGuid(0);
+                            var username = reader.GetString(1);
+                            var password = reader.GetString(2);
+                            var coins = reader.GetInt32(3);
+                            var elo = reader.GetInt32(5);
+                            var wins = reader.GetInt32(6);
+                            var losses = reader.GetInt32(7);
+
+                            return new User(id, username, password, coins, token ?? string.Empty, elo, wins, losses);
                         }
                     }
                 }
@@ -150,18 +163,19 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 {
                     command.CommandText = @"
                         SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses
-                        FROM Users";
+                        FROM Users
+                        ORDER BY Elo DESC, Wins DESC, Losses ASC;";
 
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             users.Add(new User(
-                                reader.GetInt32(0),
+                                reader.GetGuid(0),
                                 reader.GetString(1),
                                 reader.GetString(2),
                                 reader.GetInt32(3),
-                                reader.GetString(4),
+                                reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
                                 reader.GetInt32(5),
                                 reader.GetInt32(6),
                                 reader.GetInt32(7)
@@ -221,11 +235,11 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.Parameters.AddWithValue("Id", user.Id);
             command.Parameters.AddWithValue("Username", user.Username ?? string.Empty);
             command.Parameters.AddWithValue("Password", user.Password ?? string.Empty);
-            command.Parameters.AddWithValue("Coins", user.Coins);
+            command.Parameters.AddWithValue("Coins", Math.Max(0, user.Coins)); // Verhindert negative Coins
             command.Parameters.AddWithValue("Token", user.Token ?? string.Empty);
-            command.Parameters.AddWithValue("Elo", user.Stats.Elo);
-            command.Parameters.AddWithValue("Wins", user.Stats.Wins);
-            command.Parameters.AddWithValue("Losses", user.Stats.Losses);
+            command.Parameters.AddWithValue("Elo", user.Stats?.Elo ?? 100);  // Fallback für fehlende Stats
+            command.Parameters.AddWithValue("Wins", user.Stats?.Wins ?? 0);
+            command.Parameters.AddWithValue("Losses", user.Stats?.Losses ?? 0);
 
             command.ExecuteNonQuery();
         }

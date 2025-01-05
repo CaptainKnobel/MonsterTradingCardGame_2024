@@ -61,7 +61,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
             var username = "testuser";
             var password = "password123";
             var expectedToken = "valid-token";
-            _userRepository.Login(username, password).Returns(new User { Token = expectedToken });
+            _userRepository.Login(username, password).Returns(new User { Id = Guid.NewGuid(), Token = expectedToken });
 
             // Act
             var result = _userHandler.LoginUser(username, password);
@@ -90,8 +90,12 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         {
             // Arrange
             var token = "valid-token";
-            var expectedDeck = new List<Card> { new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon) };
-            var user = new User { Deck = new CardDeck { Cards = expectedDeck } };
+            var userId = Guid.NewGuid();
+            var expectedDeck = new List<Card>
+            {
+                new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon, userId)
+            };
+            var user = new User { Id = userId, Deck = new CardDeck { Cards = expectedDeck } };
             _userRepository.GetUserByToken(token).Returns(user);
 
             // Act
@@ -120,7 +124,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         {
             // Arrange
             var token = "valid-token";
-            var user = new User { Stats = new UserStats { Elo = 1000, Wins = 10 } };
+            var user = new User { Id = Guid.NewGuid(), Stats = new UserStats { Elo = 1000, Wins = 10 } };
             _userRepository.GetUserByToken(token).Returns(user);
 
             // Act
@@ -136,7 +140,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         {
             // Arrange
             var token = "valid-token";
-            var user = new User { Stats = new UserStats { Elo = 1000, Losses = 5 } };
+            var user = new User { Id = Guid.NewGuid(), Stats = new UserStats { Elo = 1000, Losses = 5 } };
             _userRepository.GetUserByToken(token).Returns(user);
 
             // Act
@@ -151,7 +155,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void SpendCoins_UserHasEnoughCoins_ReturnsTrue()
         {
             // Arrange
-            var user = new User { Coins = 10 };
+            var user = new User { Id = Guid.NewGuid(), Coins = 10 };
 
             // Act
             var result = _userHandler.SpendCoins(user, 5);
@@ -165,7 +169,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void SpendCoins_UserNotEnoughCoins_ReturnsFalse()
         {
             // Arrange
-            var user = new User { Coins = 3 };
+            var user = new User { Id = Guid.NewGuid(), Coins = 3 };
 
             // Act
             var result = _userHandler.SpendCoins(user, 5);

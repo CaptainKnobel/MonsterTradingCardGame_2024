@@ -28,7 +28,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetUserCards_ValidUserId_ReturnsCards()
         {
             // Arrange
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var expectedCards = new List<Card>
             {
                 new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon, userId),
@@ -48,7 +48,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetUserCards_InvalidUserId_ReturnsEmptyList()
         {
             // Arrange
-            var userId = 99;
+            var userId = Guid.NewGuid();
             _cardRepository.GetCardsByUserId(userId).Returns(new List<Card>());
 
             // Act
@@ -63,7 +63,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         {
             // Arrange
             var cardId = Guid.NewGuid();
-            var expectedCard = new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon);
+            var expectedCard = new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon, Guid.NewGuid());
 
             _cardRepository.GetCardById(cardId).Returns(expectedCard);
 
@@ -92,7 +92,8 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void AddCard_ValidCard_ReturnsTrue()
         {
             // Arrange
-            var card = new SpellCard("Fireball", 40, Enums.Element.Fire);
+            var ownerId = Guid.NewGuid();
+            var card = new SpellCard("Fireball", 40, Enums.Element.Fire, ownerId);
 
             _cardRepository.AddCard(card).Returns(true);
 
@@ -107,7 +108,8 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void AddCard_InvalidCard_ReturnsFalse()
         {
             // Arrange
-            var card = new SpellCard("Fireball", 40, Enums.Element.Fire);
+            var ownerId = Guid.NewGuid();
+            var card = new SpellCard("Fireball", 40, Enums.Element.Fire, ownerId);
 
             _cardRepository.AddCard(card).Returns(false);
 

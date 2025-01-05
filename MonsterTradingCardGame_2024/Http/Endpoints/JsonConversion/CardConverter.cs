@@ -21,11 +21,15 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion
         {
             var jsonObject = JObject.Load(reader);
 
-            // Name und Damage sind Pflichtfelder
+            // Pflichtfelder auslesen
             var name = jsonObject["Name"]?.Value<string>() ?? throw new JsonSerializationException("Card name is missing");
             var damage = jsonObject["Damage"]?.Value<double>() ?? throw new JsonSerializationException("Card damage is missing");
 
-            // Kartentyp und Spezies aus dem JSON entnehmen, aus dem Namen ableiten oder Defaults setzen
+            // GUIDs auslesen oder generieren
+            var id = jsonObject["Id"]?.Value<Guid>() ?? Guid.NewGuid();
+            var ownerId = jsonObject["OwnerId"]?.Value<Guid>() ?? Guid.NewGuid();
+
+            // Weitere Felder auslesen oder ableiten
             var cardType = jsonObject["CardType"]?.Value<int>() != null
                 ? (CardType)jsonObject["CardType"]!.Value<int>()
                 : InferCardTypeFromName(name);
@@ -38,12 +42,11 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion
                 ? (Element)jsonObject["ElementType"]!.Value<int>()
                 : InferElementFromName(name);
 
-
             // Karte basierend auf Typ erstellen
             Card card = cardType switch
             {
-                CardType.Monster => new MonsterCard(name, damage, element, species),
-                CardType.Spell => new SpellCard(name, damage, element),
+                CardType.Monster => new MonsterCard(name, damage, element, species, ownerId) { Id = id },
+                CardType.Spell => new SpellCard(name, damage, element, ownerId) { Id = id },
                 _ => throw new JsonSerializationException($"Unknown card type for name: {name}")
             };
 
