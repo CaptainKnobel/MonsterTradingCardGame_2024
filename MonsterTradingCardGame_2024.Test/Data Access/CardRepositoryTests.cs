@@ -8,9 +8,7 @@ using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.Models;
 using MonsterTradingCardGame_2024.Enums;
 using Npgsql;
-using NUnit;
 using NUnit.Framework;
-using NSubstitute;
 
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
@@ -19,28 +17,24 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
     {
         private CardRepository _cardRepository;
         private string _connectionString;
-        private NpgsqlConnection _connection;
-        private NpgsqlTransaction _transaction;
 
         [SetUp]
         public void Setup()
         {
             _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+
+            // Ensure database is ready for testing
             DatabaseManager.CleanupTables(_connectionString);
             DatabaseManager.InitializeDatabase(_connectionString);
-            _connection = new NpgsqlConnection(_connectionString);
-            _connection.Open();
-            _transaction = _connection.BeginTransaction();
+
             _cardRepository = new CardRepository(_connectionString);
         }
 
         [TearDown]
         public void Teardown()
         {
-            _transaction.Rollback();
+            // Clean up tables after each test
             DatabaseManager.CleanupTables(_connectionString);
-            _transaction.Dispose();
-            _connection.Dispose();
         }
 
         [Test]
