@@ -67,12 +67,10 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                         }).ToList()
                     };
 
-                    rs.SetJsonContentType();
-                    rs.Content = JsonConvert.SerializeObject(response, new JsonSerializerSettings
+                    rs.SetSuccess(JsonConvert.SerializeObject(response, new JsonSerializerSettings
                     {
                         Formatting = Formatting.Indented
-                    });
-                    rs.SetSuccess("Cards retrieved successfully", 200);
+                    }), 201);
                 }
                 catch (Exception ex)
                 {
