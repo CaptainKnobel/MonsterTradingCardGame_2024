@@ -26,8 +26,8 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion
             var damage = jsonObject["Damage"]?.Value<double>() ?? throw new JsonSerializationException("Card damage is missing");
 
             // GUIDs auslesen oder generieren
-            var id = jsonObject["Id"]?.Value<Guid>() ?? Guid.NewGuid();
-            var ownerId = jsonObject["OwnerId"]?.Value<Guid>() ?? Guid.NewGuid();
+            Guid id = Guid.TryParse(jsonObject["Id"]?.Value<string>(), out var parsedId) ? parsedId : Guid.NewGuid();
+            Guid ownerId = jsonObject["OwnerId"]?.Value<Guid>() ?? Guid.NewGuid();
 
             // Weitere Felder auslesen oder ableiten
             var cardType = jsonObject["CardType"]?.Value<int>() != null
