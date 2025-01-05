@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonsterTradingCardGame_2024.Infrastructure.Database;
 using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.Models;
 using MonsterTradingCardGame_2024.Enums;
 using Npgsql;
+using NUnit;
 using NUnit.Framework;
+using NSubstitute;
 
 namespace MonsterTradingCardGame_2024.Test.Data_Access
 {
     [TestFixture]
-    public class CardRepositoryTests : IDisposable
+    public class CardRepositoryTests
     {
         private CardRepository _cardRepository;
         private string _connectionString;
@@ -23,6 +26,8 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void Setup()
         {
             _connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=mtcgdb";
+            DatabaseManager.CleanupTables(_connectionString);
+            DatabaseManager.InitializeDatabase(_connectionString);
             _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
@@ -33,6 +38,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void Teardown()
         {
             _transaction.Rollback();
+            DatabaseManager.CleanupTables(_connectionString);
             _transaction.Dispose();
             _connection.Dispose();
         }
@@ -85,12 +91,6 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             Assert.That(userCards.Count, Is.EqualTo(2));
             Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card1.Id));
             Assert.That(userCards, Has.Exactly(1).Matches<Card>(c => c.Id == card2.Id));
-        }
-
-        public void Dispose()
-        {
-            _transaction?.Dispose();
-            _connection?.Dispose();
         }
     }
 }
