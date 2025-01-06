@@ -17,7 +17,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             _userRepository = userRepository;
         }
 
-        public IEnumerable<UserStats> GetScoreboard()
+        public IEnumerable<(string Username, UserStats Stats)> GetScoreboard()
         {
             return _userRepository.GetScoreboardData();
         }

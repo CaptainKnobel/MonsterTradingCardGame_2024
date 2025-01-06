@@ -15,6 +15,6 @@ namespace MonsterTradingCardGame_2024.Data_Access
         List<User> GetAllUsers();
         List<User> GetUsersByUsernamePrefix(string usernamePrefix);
         void UpdateUser(User user);
-        IEnumerable<UserStats> GetScoreboardData();
+        IEnumerable<(string Username, UserStats Stats)> GetScoreboardData();
     }
 }

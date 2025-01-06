@@ -24,14 +24,21 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             {
                 var scoreboard = _scoreboardHandler.GetScoreboard();
 
+                // Transform tuples into a serializable object
+                var response = scoreboard.Select(entry => new
+                {
+                    Username = entry.Username,
+                    Stats = entry.Stats
+                });
+
                 rs.SetJsonContentType();
-                rs.Content = JsonConvert.SerializeObject(scoreboard, Formatting.Indented);
+                rs.Content = JsonConvert.SerializeObject(response, Formatting.Indented);
                 rs.SetSuccess("Scoreboard retrieved successfully", 200);
 
                 return true;
             }
 
-            return false; // Unhandled request
+            return false;   // Unhandled request
         }
     }
 }

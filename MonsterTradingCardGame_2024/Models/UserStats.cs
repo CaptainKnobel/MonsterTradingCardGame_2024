@@ -28,5 +28,5 @@ namespace MonsterTradingCardGame_2024.Models
         public int Wins { get; set; }
         // Number of lost matches
         public int Losses { get; set; }
-    }
-}
+    } // <- End of UserStats class
+} // <- End of MonsterTradingCardGame_2024.Models namesspace
