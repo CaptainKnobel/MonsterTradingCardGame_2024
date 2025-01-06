@@ -45,7 +45,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var command = connection.CreateCommand();
             command.CommandText = @"
                 INSERT INTO Users (Id, Username, Password, Coins, Token, Elo, Wins, Losses)
-                VALUES (@Id, @Username, @Password, 20, NULL, 100, 0, 0);
+                VALUES (@Id, @Username, @Password, 20, @Token, 100, 0, 0);
             ";
             var token = GenerateToken(username);
             command.Parameters.AddWithValue("@Id", Guid.NewGuid());
