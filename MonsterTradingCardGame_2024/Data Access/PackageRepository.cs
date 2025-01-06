@@ -217,8 +217,17 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     command.Parameters.AddWithValue("@NewOwnerId", newOwnerId);
                     command.Parameters.AddWithValue("@CardId", card.Id);
 
+                    Console.WriteLine($"SQL Command: {command.CommandText}");
                     Console.WriteLine($"Transferring card {card.Id} to owner {newOwnerId}");
-                    command.ExecuteNonQuery();
+                    var rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                    {
+                        Console.WriteLine($"Failed to update CardId {card.Id}. No rows affected.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Successfully updated CardId {card.Id} to OwnerId {newOwnerId}.");
+                    }
                 }
 
                 transaction.Commit();
