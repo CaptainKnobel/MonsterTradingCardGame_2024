@@ -197,7 +197,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 }
 
                 transaction.Commit();
-                Console.WriteLine($"Success!");
+                Console.WriteLine($"All cards successfully transferred.");
                 return true;
             }
             catch (Exception ex)

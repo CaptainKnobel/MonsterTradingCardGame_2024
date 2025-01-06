@@ -43,11 +43,13 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             }
 
             // 4. Add all the cards from the package to the user's stack in the database
+            Console.WriteLine($"Card currently owned by {cards.First().OwnerId}");
             var transferSuccess = _packageRepository.TransferOwnership(cards, user.Id);
             if (!transferSuccess)
             {
                 return (false, null, "Failed to transfer ownership of the package");
             }
+            Console.WriteLine($"Card now owned by {cards.First().OwnerId}");
 
             // 5. Deduct the cost from the user's coins
             if (!_userHandler.SpendCoins(user, packageCost))
