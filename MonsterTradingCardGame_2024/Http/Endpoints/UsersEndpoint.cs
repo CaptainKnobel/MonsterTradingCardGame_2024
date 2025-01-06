@@ -86,6 +86,8 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 return true;
             }
 
+            Console.WriteLine($"Requesting UserName: {requestingUser.Username}");
+            Console.WriteLine($"Requested UserName:  {requestedUsername}");
             if (requestingUser.Username != requestedUsername)
             {
                 rs.SetClientError("Forbidden - Cannot access another user's profile", 403);
