@@ -150,7 +150,9 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
             // Arrange
             var userId = Guid.NewGuid();
             var cardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
-            _deckRepository.UpdateDeck(userId, cardIds).Returns(false);
+
+            // Mock invalid validation
+            _cardRepository.GetCardsByUserId(userId).Returns(new List<Card>());
 
             // Act & Assert
             Assert.Throws<InvalidOperationException>(() => _deckHandler.UpdateDeck(userId, cardIds));
