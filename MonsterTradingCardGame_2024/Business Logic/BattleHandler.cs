@@ -113,10 +113,10 @@ namespace MonsterTradingCardGame_2024.Business_Logic
                 battleLog.Add($"Battle Result: Winner - {winner}, Loser - {loser}");
 
                 // Transfer defeated cards to the opponent's stack
-                TransferCardsToStack(defeatedCardsPlayer1, player2.Id);
-                TransferCardsToStack(defeatedCardsPlayer2, player1.Id);
-                _deckRepository.RemoveCardsFromDeck(player1.Id, defeatedCardsPlayer1.Select(card => card.Id).ToList());
-                _deckRepository.RemoveCardsFromDeck(player2.Id, defeatedCardsPlayer2.Select(card => card.Id).ToList());
+                //TransferCardsToStack(defeatedCardsPlayer1, player2.Id);
+                //TransferCardsToStack(defeatedCardsPlayer2, player1.Id);
+                //_deckRepository.RemoveCardsFromDeck(player1.Id, defeatedCardsPlayer1.Select(card => card.Id).ToList());
+                //_deckRepository.RemoveCardsFromDeck(player2.Id, defeatedCardsPlayer2.Select(card => card.Id).ToList());
 
                 // Optionally: Save battleLog to a database or return it for logging
                 Console.WriteLine(string.Join(Environment.NewLine, battleLog));
