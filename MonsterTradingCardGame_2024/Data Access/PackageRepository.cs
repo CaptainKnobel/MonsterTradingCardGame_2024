@@ -212,6 +212,17 @@ namespace MonsterTradingCardGame_2024.Data_Access
             {
                 foreach (var card in cards)
                 {
+                    // Überprüfung, ob die Karte existiert
+                    using var validationCommand = connection.CreateCommand();
+                    validationCommand.CommandText = "SELECT COUNT(*) FROM Cards WHERE Id = @CardId;";
+                    validationCommand.Parameters.AddWithValue("@CardId", card.Id);
+                    var exists = (long?)validationCommand.ExecuteScalar() ?? 0;
+                    if (exists == 0)
+                    {
+                        Console.WriteLine($"Card with ID {card.Id} does not exist in the database.");
+                        continue; // Überspringe die Karte
+                    }
+
                     using var command = connection.CreateCommand();
                     command.CommandText = @"
                         UPDATE Cards
