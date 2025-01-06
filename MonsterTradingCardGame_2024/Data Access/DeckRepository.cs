@@ -83,16 +83,38 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-                UPDATE Decks
-                SET CardIds = array_remove(CardIds, UNNEST(@CardIds))
+            // Aktuelles CardIds-Array abrufen
+            using var selectCommand = connection.CreateCommand();
+            selectCommand.CommandText = @"
+                SELECT CardIds
+                FROM Decks
                 WHERE UserId = @UserId;
             ";
-            command.Parameters.AddWithValue("@UserId", userId);
-            command.Parameters.AddWithValue("@CardIds", cardIds.ToArray());
+            selectCommand.Parameters.AddWithValue("@UserId", userId);
 
-            return command.ExecuteNonQuery() > 0;
+            var currentCardIds = new List<Guid>();
+            using (var reader = selectCommand.ExecuteReader())
+            {
+                if (reader.Read() && !reader.IsDBNull(0))
+                {
+                    currentCardIds = reader.GetFieldValue<Guid[]>(0).ToList();
+                }
+            }
+
+            // Entfernte Karten ermitteln
+            var updatedCardIds = currentCardIds.Except(cardIds).ToArray();
+
+            // CardIds-Array aktualisieren
+            using var updateCommand = connection.CreateCommand();
+            updateCommand.CommandText = @"
+                UPDATE Decks
+                SET CardIds = @UpdatedCardIds
+                WHERE UserId = @UserId;
+            ";
+            updateCommand.Parameters.AddWithValue("@UpdatedCardIds", updatedCardIds);
+            updateCommand.Parameters.AddWithValue("@UserId", userId);
+
+            return updateCommand.ExecuteNonQuery() > 0;
         }
 
     }
