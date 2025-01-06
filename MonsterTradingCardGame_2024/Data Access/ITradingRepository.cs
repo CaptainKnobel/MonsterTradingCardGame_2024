@@ -12,5 +12,6 @@ namespace MonsterTradingCardGame_2024.Data_Access
         void AddTradingDeal(TradingDeal deal);
         TradingDeal? GetTradingDealById(string id);
         void RemoveTradingDeal(string id);
+        List<TradingDeal> GetAllTradingDeals();
     }
 }

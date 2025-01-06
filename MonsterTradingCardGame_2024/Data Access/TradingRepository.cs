@@ -43,7 +43,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     lockCommand.CommandText = @"
                         UPDATE Cards
                         SET Locked = TRUE
-                        WHERE Id = @CardId
+                        WHERE Id = @CardId;
                     ";
                     lockCommand.Parameters.AddWithValue("@CardId", deal.CardToTrade.Id);
                     if (lockCommand.ExecuteNonQuery() == 0)
@@ -57,7 +57,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 {
                     command.CommandText = @"
                         INSERT INTO TradingDeals (Id, CardToTradeId, AcceptedElement, AcceptedSpecies, MinimumDamage)
-                        VALUES (@Id, @CardToTradeId, @AcceptedElement, @AcceptedSpecies, @MinimumDamage)
+                        VALUES (@Id, @CardToTradeId, @AcceptedElement, @AcceptedSpecies, @MinimumDamage);
                     ";
                     command.Parameters.AddWithValue("@Id", deal.Id);
                     command.Parameters.AddWithValue("@CardToTradeId", deal.CardToTrade.Id);
@@ -91,7 +91,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                        td.AcceptedElement, td.AcceptedSpecies, td.MinimumDamage
                 FROM TradingDeals td
                 JOIN Cards c ON td.CardToTradeId = c.Id
-                WHERE td.Id = @Id
+                WHERE td.Id = @Id;
             ";
             command.Parameters.AddWithValue("@Id", id);
 
@@ -145,10 +145,70 @@ namespace MonsterTradingCardGame_2024.Data_Access
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = "DELETE FROM TradingDeals WHERE Id = @Id";
+            command.CommandText = @"DELETE FROM TradingDeals WHERE Id = @Id;";
             command.Parameters.AddWithValue("@Id", id);
 
             command.ExecuteNonQuery();
         }
+
+        public List<TradingDeal> GetAllTradingDeals()
+        {
+            var deals = new List<TradingDeal>();
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT td.Id, c.Id, c.Name, c.Damage, c.ElementType, c.Species, c.CardType, c.OwnerId, c.Locked, 
+                       td.AcceptedElement, td.AcceptedSpecies, td.MinimumDamage
+                FROM TradingDeals td
+                JOIN Cards c ON td.CardToTradeId = c.Id;
+            ";
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var cardType = (CardType)reader.GetInt32(6);
+                var ownerId = reader.GetGuid(7);
+
+                Card card = cardType switch
+                {
+                    CardType.Monster => new MonsterCard(
+                        reader.GetString(2),            // Name
+                        reader.GetDouble(3),            // Damage
+                        (Element)reader.GetInt32(4),    // ElementType
+                        (Species)reader.GetInt32(5),    // Species
+                        ownerId                         // OwnerId
+                    )
+                    {
+                        Id = reader.GetGuid(1),         // Card ID
+                        Locked = reader.GetBoolean(8)   // Locked
+                    },
+                    CardType.Spell => new SpellCard(
+                        reader.GetString(2),            // Name
+                        reader.GetDouble(3),            // Damage
+                        (Element)reader.GetInt32(4),    // ElementType
+                        ownerId                         // OwnerId
+                    )
+                    {
+                        Id = reader.GetGuid(1),         // Card ID
+                        Locked = reader.GetBoolean(8)   // Locked
+                    },
+                    _ => throw new InvalidOperationException("Unknown card type.")
+                };
+
+                deals.Add(new TradingDeal(
+                    reader.GetString(0),                // TradingDeal ID
+                    card,
+                    (Element)reader.GetInt32(9),        // AcceptedElement
+                    (Species)reader.GetInt32(10),       // AcceptedSpecies
+                    reader.GetFloat(11)                 // MinimumDamage
+                ));
+            }
+
+            return deals;
+        }
+
     }
 }

@@ -67,5 +67,20 @@ namespace MonsterTradingCardGame_2024.Business_Logic
 
             return true;
         }
+
+        public List<TradingDeal> GetAllTradingDeals()
+        {
+            return _tradingRepository.GetAllTradingDeals();
+        }
+
+        public TradingDeal? GetTradingDealById(string id)
+        {
+            return _tradingRepository.GetTradingDealById(id);
+        }
+
+        public void RemoveTradingDeal(string tradingId)
+        {
+            _tradingRepository.RemoveTradingDeal(tradingId);
+        }
     }
 }
