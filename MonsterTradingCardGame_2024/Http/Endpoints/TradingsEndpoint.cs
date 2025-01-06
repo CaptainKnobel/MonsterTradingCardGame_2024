@@ -39,10 +39,40 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
         private bool HandleGetTradingDeals(HttpRequest rq, HttpResponse rs)
         {
-            var deals = _tradingHandler.GetAllTradingDeals();
-            rs.SetJsonContentType();
-            rs.Content = JsonConvert.SerializeObject(deals, Formatting.Indented);
-            rs.SetSuccess("Trading deals retrieved successfully", 200);
+            try
+            {
+                Console.WriteLine("Fetching all trading deals...");
+                var deals = _tradingHandler.GetAllTradingDeals();
+
+                // Transformiere die Deals in ein einfaches serialisierbares Format
+                var response = deals.Select(deal => new
+                {
+                    Id = deal.Id,
+                    CardToTradeId = deal.CardToTradeId,
+                    AcceptedElement = deal.AcceptedElement.ToString(),
+                    AcceptedSpecies = deal.AcceptedSpecies.ToString(),
+                    MinimumDamage = deal.MinimumDamage,
+                    CardDetails = deal.CardToTrade != null ? new
+                    {
+                        deal.CardToTrade.Id,
+                        deal.CardToTrade.Name,
+                        deal.CardToTrade.Damage,
+                        deal.CardToTrade.ElementType,
+                        Type = deal.CardToTrade is MonsterCard monsterCard
+                            ? $"Monster ({monsterCard.MonsterSpecies})"
+                            : "Spell"
+                    } : null
+                });
+
+                rs.SetJsonContentType();
+                rs.Content = JsonConvert.SerializeObject(response, Formatting.Indented);
+                rs.SetSuccess("Trading deals retrieved successfully", 200);
+            }
+            catch (Exception ex)
+            {
+                rs.SetServerError($"Failed to retrieve trading deals: {ex.Message}");
+            }
+
             return true;
         }
 
@@ -54,17 +84,45 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 return true;
             }
 
-            var deal = _tradingHandler.GetTradingDealById(tradingId);
-
-            if (deal == null)
+            try
             {
-                rs.SetClientError("Trading deal not found", 404);
-                return true;
+                var deal = _tradingHandler.GetTradingDealById(tradingId);
+
+                if (deal == null)
+                {
+                    rs.SetClientError("Trading deal not found", 404);
+                    return true;
+                }
+
+                // Transformiere das Deal-Objekt in ein einfach serialisierbares Format
+                var response = new
+                {
+                    Id = deal.Id,
+                    CardToTradeId = deal.CardToTradeId,
+                    AcceptedElement = deal.AcceptedElement.ToString(),
+                    AcceptedSpecies = deal.AcceptedSpecies.ToString(),
+                    MinimumDamage = deal.MinimumDamage,
+                    CardDetails = deal.CardToTrade != null ? new
+                    {
+                        deal.CardToTrade.Id,
+                        deal.CardToTrade.Name,
+                        deal.CardToTrade.Damage,
+                        deal.CardToTrade.ElementType,
+                        Type = deal.CardToTrade is MonsterCard monsterCard
+                            ? $"Monster ({monsterCard.MonsterSpecies})"
+                            : "Spell"
+                    } : null
+                };
+
+                rs.SetJsonContentType();
+                rs.Content = JsonConvert.SerializeObject(response, Formatting.Indented);
+                rs.SetSuccess("Trading deal retrieved successfully", 200);
+            }
+            catch (Exception ex)
+            {
+                rs.SetServerError($"Failed to retrieve trading deal: {ex.Message}");
             }
 
-            rs.SetJsonContentType();
-            rs.Content = JsonConvert.SerializeObject(deal, Formatting.Indented);
-            rs.SetSuccess("Trading deal retrieved successfully", 200);
             return true;
         }
 
