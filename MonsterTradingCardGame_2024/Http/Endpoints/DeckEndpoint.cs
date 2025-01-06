@@ -100,7 +100,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             var cardIds = JsonConvert.DeserializeObject<List<Guid>>(rq.Content);
             if (cardIds == null || cardIds.Count() != 4)
             {
-                rs.SetClientError("Deck must contain exactly 4 valid card IDs", 400);
+                rs.SetClientError("Bad request: Deck must contain exactly 4 valid card IDs", 400);
                 return true;
             }
 
