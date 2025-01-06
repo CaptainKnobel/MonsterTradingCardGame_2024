@@ -10,8 +10,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
     public interface ITradingRepository
     {
         void AddTradingDeal(TradingDeal deal);
-        TradingDeal? GetTradingDealById(string id);
-        void RemoveTradingDeal(string id);
+        TradingDeal? GetTradingDealById(Guid id);
+        void RemoveTradingDeal(Guid id);
         List<TradingDeal> GetAllTradingDeals();
     }
 }

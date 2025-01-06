@@ -79,8 +79,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             }
         }
 
-
-        public TradingDeal? GetTradingDealById(string id)
+        public TradingDeal? GetTradingDealById(Guid id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -128,7 +127,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 };
 
                 return new TradingDeal(
-                    reader.GetString(0),                // TradingDeal ID
+                    reader.GetGuid(0),                  // TradingDeal ID
                     card,
                     (Element)reader.GetInt32(9),        // AcceptedElement
                     (Species)reader.GetInt32(10),       // AcceptedSpecies
@@ -139,7 +138,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return null;
         }
 
-        public void RemoveTradingDeal(string id)
+        public void RemoveTradingDeal(Guid id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
@@ -199,7 +198,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 };
 
                 deals.Add(new TradingDeal(
-                    reader.GetString(0),                // TradingDeal ID
+                    reader.GetGuid(0),                  // TradingDeal ID
                     card,
                     (Element)reader.GetInt32(9),        // AcceptedElement
                     (Species)reader.GetInt32(10),       // AcceptedSpecies

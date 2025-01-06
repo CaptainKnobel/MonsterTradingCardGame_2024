@@ -48,13 +48,12 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
         private bool HandleGetSingleTradingDeal(HttpRequest rq, HttpResponse rs)
         {
-            if (rq.Path.Length < 3)
+            if (rq.Path.Length < 3 || !Guid.TryParse(rq.Path[2], out var tradingId))
             {
-                rs.SetClientError("Invalid request", 400);
+                rs.SetClientError("Invalid trading deal ID format", 400);
                 return true;
             }
 
-            var tradingId = rq.Path[2];
             var deal = _tradingHandler.GetTradingDealById(tradingId);
 
             if (deal == null)
@@ -79,53 +78,16 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
             try
             {
-                // Parse die Eingabe
-                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(rq.Content);
-                if (data == null || !data.ContainsKey("Id") || !data.ContainsKey("CardToTrade") || !data.ContainsKey("MinimumDamage"))
+                Console.WriteLine($"Attempting to Create Trade Deal...");
+
+                var deal = JsonConvert.DeserializeObject<TradingDeal>(rq.Content);
+                if (deal == null || deal.CardToTradeId == null)
                 {
                     rs.SetClientError("Invalid JSON format or missing required fields", 400);
                     return true;
                 }
 
-                // Werte extrahieren
-                var id = data["Id"].ToString();
-                if (!Guid.TryParse(data["CardToTrade"].ToString(), out var cardToTradeId))
-                {
-                    rs.SetClientError("Invalid CardToTrade GUID format", 400);
-                    return true;
-                }
-
-                var minimumDamage = float.TryParse(data["MinimumDamage"].ToString(), out var parsedDamage) ? parsedDamage : 0;
-
-                // Optional: Element und Species validieren
-                var acceptedElement = data.ContainsKey("AcceptedElement") && Enum.TryParse(typeof(Element), data["AcceptedElement"].ToString(), out var element)
-                    ? (Element)element
-                    : Element.Normal;
-
-                var acceptedSpecies = data.ContainsKey("AcceptedSpecies") && Enum.TryParse(typeof(Species), data["AcceptedSpecies"].ToString(), out var species)
-                    ? (Species)species
-                    : Species.Goblin;
-
-                // Karte laden
-                var cardToTrade = _tradingHandler.GetCardById(cardToTradeId);
-                if (cardToTrade == null)
-                {
-                    rs.SetClientError("Card to trade not found", 404);
-                    return true;
-                }
-
-                // Erstelle das TradingDeal-Objekt
-                var deal = new TradingDeal
-                {
-                    Id = id ?? Guid.NewGuid().ToString(),
-                    CardToTrade = cardToTrade,
-                    AcceptedElement = acceptedElement,
-                    AcceptedSpecies = acceptedSpecies,
-                    MinimumDamage = minimumDamage
-                };
-
                 _tradingHandler.CreateTradingDeal(deal);
-
                 rs.SetSuccess("Trading deal created successfully", 201);
             }
             catch (Exception ex)
@@ -139,16 +101,13 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
         private bool HandleAcceptTradingDeal(HttpRequest rq, HttpResponse rs)
         {
-            if (string.IsNullOrWhiteSpace(rq.Content) || rq.Path.Length < 3)
+            if (rq.Path.Length < 3 || !Guid.TryParse(rq.Path[2], out var tradingId))
             {
-                rs.SetClientError("Invalid request", 400);
+                rs.SetClientError("Invalid trading deal ID format", 400);
                 return true;
             }
 
-            var tradingId = rq.Path[2];
-            var offeredCard = JsonConvert.DeserializeObject<Card>(rq.Content);
-
-            if (offeredCard == null)
+            if (string.IsNullOrWhiteSpace(rq.Content) || !Guid.TryParse(rq.Content.Trim('"'), out var offeredCardId))
             {
                 rs.SetClientError("Invalid card format", 400);
                 return true;
@@ -156,7 +115,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
             try
             {
-                if (_tradingHandler.AcceptTradingDeal(tradingId, offeredCard))
+                if (_tradingHandler.AcceptTradingDeal(tradingId, offeredCardId))
                 {
                     rs.SetSuccess("Trading deal accepted", 200);
                 }
@@ -175,13 +134,12 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
         private bool HandleDeleteTradingDeal(HttpRequest rq, HttpResponse rs)
         {
-            if (rq.Path.Length < 3)
+            if (rq.Path.Length < 3 || !Guid.TryParse(rq.Path[2], out var tradingId))
             {
-                rs.SetClientError("Invalid request", 400);
+                rs.SetClientError("Invalid trading deal ID format", 400);
                 return true;
             }
 
-            var tradingId = rq.Path[2];
             try
             {
                 _tradingHandler.RemoveTradingDeal(tradingId);

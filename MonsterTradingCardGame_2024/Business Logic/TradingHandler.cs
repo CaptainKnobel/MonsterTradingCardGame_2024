@@ -37,14 +37,15 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             _tradingRepository.AddTradingDeal(deal);
         }
 
-        public bool AcceptTradingDeal(string tradingId, Card offeredCard)
+        public bool AcceptTradingDeal(Guid tradingId, Guid offeredCardId)
         {
             var deal = _tradingRepository.GetTradingDealById(tradingId);
             if (deal == null)
                 throw new InvalidOperationException("Trading deal not found");
 
-            if (offeredCard.Locked)
-                throw new InvalidOperationException("The offered card is locked and cannot be traded.");
+            var offeredCard = _cardRepository.GetCardById(offeredCardId);
+            if (offeredCard == null || offeredCard.Locked)
+                throw new InvalidOperationException("The offered card is invalid or locked.");
 
             if (deal.CardToTrade?.Locked == true)
                 throw new InvalidOperationException("The card in the trading deal is locked and cannot be traded.");
@@ -80,12 +81,12 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             return _tradingRepository.GetAllTradingDeals();
         }
 
-        public TradingDeal? GetTradingDealById(string id)
+        public TradingDeal? GetTradingDealById(Guid id)
         {
             return _tradingRepository.GetTradingDealById(id);
         }
 
-        public void RemoveTradingDeal(string tradingId)
+        public void RemoveTradingDeal(Guid tradingId)
         {
             _tradingRepository.RemoveTradingDeal(tradingId);
         }
