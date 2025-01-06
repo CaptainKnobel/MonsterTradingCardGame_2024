@@ -52,7 +52,7 @@ namespace MonsterTradingCardGame_2024
                 DeckHandler deckHandler = new DeckHandler(deckRepository, cardRepository);
                 ScoreboardHandler scoreboardHandler = new ScoreboardHandler(userRepository);
                 TradingHandler tradingHandler = new TradingHandler(tradingRepository, cardRepository);
-                BattleHandler battleHandler = new BattleHandler(userRepository, deckRepository);
+                BattleHandler battleHandler = new BattleHandler(userRepository, deckRepository, cardRepository);
 
                 // Setup the Http Server
                 Console.WriteLine("Setting up server...");

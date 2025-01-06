@@ -11,5 +11,6 @@ namespace MonsterTradingCardGame_2024.Data_Access
     {
         List<Card> GetDeckByUserId(Guid userId);
         bool UpdateDeck(Guid userId, IEnumerable<Guid> cardIds);
+        bool RemoveCardsFromDeck(Guid userId, IEnumerable<Guid> cardIds);
     }
 }

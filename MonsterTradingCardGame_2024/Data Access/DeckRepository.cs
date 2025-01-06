@@ -77,5 +77,23 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             return command.ExecuteNonQuery() > 0;
         }
+
+        public bool RemoveCardsFromDeck(Guid userId, IEnumerable<Guid> cardIds)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                UPDATE Decks
+                SET CardIds = array_remove(CardIds, UNNEST(@CardIds))
+                WHERE UserId = @UserId;
+            ";
+            command.Parameters.AddWithValue("@UserId", userId);
+            command.Parameters.AddWithValue("@CardIds", cardIds.ToArray());
+
+            return command.ExecuteNonQuery() > 0;
+        }
+
     }
 }

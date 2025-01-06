@@ -14,13 +14,15 @@ namespace MonsterTradingCardGame_2024.Business_Logic
     {
         private readonly IUserRepository _userRepository;
         private readonly IDeckRepository _deckRepository;
+        private readonly ICardRepository _cardRepository;
         private readonly BattleService _battleService;
         private readonly BonusService _bonusService;
 
-        public BattleHandler(IUserRepository userRepository, IDeckRepository deckRepository)
+        public BattleHandler(IUserRepository userRepository, IDeckRepository deckRepository, ICardRepository cardRepository)
         {
             _userRepository = userRepository;
             _deckRepository = deckRepository;
+            _cardRepository = cardRepository;
             _battleService = new BattleService();
             _bonusService = new BonusService();
         }
@@ -28,6 +30,8 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         public (string Winner, string Loser) StartBattle(string player1Token, string player2Token, string? bonus1 = null, string? bonus2 = null)
         {
             var battleLog = new List<string>(); // Store round logs
+            var defeatedCardsPlayer1 = new List<Card>();
+            var defeatedCardsPlayer2 = new List<Card>();
 
             try
             {
@@ -70,11 +74,13 @@ namespace MonsterTradingCardGame_2024.Business_Logic
                     if (result > 0)
                     {
                         score1++;
+                        defeatedCardsPlayer2.Add(card2);
                         battleLog.Add($"Round {round}: {card1.Name} (Player 1) defeated {card2.Name} (Player 2).");
                     }
                     else if (result < 0)
                     {
                         score2++;
+                        defeatedCardsPlayer1.Add(card1);
                         battleLog.Add($"Round {round}: {card2.Name} (Player 2) defeated {card1.Name} (Player 1).");
                     }
                     else
@@ -105,6 +111,12 @@ namespace MonsterTradingCardGame_2024.Business_Logic
 
                 // Log the battle summary
                 battleLog.Add($"Battle Result: Winner - {winner}, Loser - {loser}");
+
+                // Transfer defeated cards to the opponent's stack
+                TransferCardsToStack(defeatedCardsPlayer1, player2.Id);
+                TransferCardsToStack(defeatedCardsPlayer2, player1.Id);
+                _deckRepository.RemoveCardsFromDeck(player1.Id, defeatedCardsPlayer1.Select(card => card.Id).ToList());
+                _deckRepository.RemoveCardsFromDeck(player2.Id, defeatedCardsPlayer2.Select(card => card.Id).ToList());
 
                 // Optionally: Save battleLog to a database or return it for logging
                 Console.WriteLine(string.Join(Environment.NewLine, battleLog));
@@ -151,5 +163,16 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             _userRepository.UpdateUser(winner);
             _userRepository.UpdateUser(loser);
         }
+
+        private void TransferCardsToStack(List<Card> defeatedCards, Guid newOwnerId)
+        {
+            foreach (var card in defeatedCards)
+            {
+                card.OwnerId = newOwnerId;
+                _cardRepository.UpdateCard(card);
+            }
+            Console.WriteLine($"Transferred {defeatedCards.Count} cards to user {newOwnerId}.");
+        }
+
     } // <- End of BattleHandler class
 } // <- End of MonsterTradingCardGame_2024.Business_Logic namesspace
