@@ -30,7 +30,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetDeckByUserId_ValidUserId_ReturnsDeck()
         {
             // Arrange
-            var userId = Guid.NewGuid(); // Guid statt int
+            var userId = Guid.NewGuid();
             var expectedDeck = new List<Card>
             {
                 new MonsterCard("Dragon", 50, Enums.Element.Fire, Enums.Species.Dragon, userId),

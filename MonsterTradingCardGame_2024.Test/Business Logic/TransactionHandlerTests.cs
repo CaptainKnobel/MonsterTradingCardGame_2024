@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonsterTradingCardGame_2024.Business_Logic;
+using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.Enums;
 using MonsterTradingCardGame_2024.Models;
-using MonsterTradingCardGame_2024.Data_Access;
-using MonsterTradingCardGame_2024.Business_Logic;
 using NSubstitute;
 using NUnit;
 using NUnit.Framework;
@@ -18,6 +18,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
     {
         private IUserRepository _userRepository;
         private IPackageRepository _packageRepository;
+        private UserHandler _userHandler;
         private TransactionHandler _transactionHandler;
 
         [SetUp]
@@ -25,8 +26,8 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         {
             _userRepository = Substitute.For<IUserRepository>();
             _packageRepository = Substitute.For<IPackageRepository>();
-            var userHandler = new UserHandler(_userRepository); // No mocking for UserHandler
-            _transactionHandler = new TransactionHandler(userHandler, _packageRepository);
+            _userHandler = new UserHandler(_userRepository); // Real UserHandler mit Mocked IUserRepository
+            _transactionHandler = new TransactionHandler(_userHandler, _packageRepository);
         }
 
         [Test]
@@ -67,7 +68,7 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
             var user = new User { Id = Guid.NewGuid(), Coins = 10 };
             var token = "valid-token";
             _userRepository.GetUserByToken(token).Returns(user);
-            _packageRepository.GetAvailablePackage().Returns((CardPackage)null!);
+            _packageRepository.GetAvailablePackage().Returns((List<Card>)null!);
 
             // Act
             var result = _transactionHandler.BuyPackage(token);
@@ -75,6 +76,30 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
             // Assert
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.ErrorMessage, Is.EqualTo("No packages available for purchase"));
+        }
+
+        [Test]
+        public void BuyPackage_FailedOwnershipTransfer_ReturnsError()
+        {
+            // Arrange
+            var user = new User { Id = Guid.NewGuid(), Coins = 10 };
+            var token = "valid-token";
+            var cards = new List<Card>
+            {
+                new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon, Guid.Empty),
+                new MonsterCard("Goblin", 20, Element.Normal, Species.Goblin, Guid.Empty)
+            };
+
+            _userRepository.GetUserByToken(token).Returns(user);
+            _packageRepository.GetAvailablePackage().Returns(cards);
+            _packageRepository.TransferOwnership(cards, user.Id).Returns(false);
+
+            // Act
+            var result = _transactionHandler.BuyPackage(token);
+
+            // Assert
+            Assert.That(result.IsSuccess, Is.False);
+            Assert.That(result.ErrorMessage, Is.EqualTo("Failed to transfer ownership of the package"));
         }
 
         [Test]
@@ -86,23 +111,20 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
             var cards = new List<Card>
             {
                 new MonsterCard("Dragon", 50, Element.Fire, Species.Dragon, user.Id),
-                new MonsterCard("Goblin", 20, Element.Normal, Species.Goblin, user.Id),
-                new SpellCard("Fireball", 40, Element.Fire, user.Id),
-                new SpellCard("WaterSplash", 30, Element.Water, user.Id),
-                new MonsterCard("Elf", 25, Element.Normal, Species.Elf, user.Id)
+                new MonsterCard("Goblin", 20, Element.Normal, Species.Goblin, user.Id)
             };
-            var package = new CardPackage(cards);
 
             _userRepository.GetUserByToken(token).Returns(user);
-            _packageRepository.GetAvailablePackage().Returns(package);
+            _packageRepository.GetAvailablePackage().Returns(cards);
+            _packageRepository.TransferOwnership(cards, user.Id).Returns(true);
 
             // Act
             var result = _transactionHandler.BuyPackage(token);
 
             // Assert
             Assert.That(result.IsSuccess, Is.True);
-            Assert.That(result.Package, Is.EqualTo(package));
-            Assert.That(user.Stack.Cards, Is.EquivalentTo(cards));
+            Assert.That(result.PurchasedCards, Is.EqualTo(cards));
+            Assert.That(user.Coins, Is.EqualTo(5)); // Verify coins deduction
         }
     }
 }

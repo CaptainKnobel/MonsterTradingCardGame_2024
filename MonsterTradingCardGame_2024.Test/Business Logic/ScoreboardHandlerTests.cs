@@ -28,27 +28,27 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetScoreboard_ReturnsSortedUserStats()
         {
             // Arrange
-            var userStats = new List<UserStats>
+            var scoreboardData = new List<(string Username, UserStats Stats)>
             {
-                new UserStats { Elo = 1200, Wins = 10, Losses = 5 },
-                new UserStats { Elo = 1300, Wins = 15, Losses = 3 },
-                new UserStats { Elo = 1100, Wins = 8, Losses = 7 }
+                ("Player1", new UserStats { Elo = 1200, Wins = 10, Losses = 5 }),
+                ("Player2", new UserStats { Elo = 1300, Wins = 15, Losses = 3 }),
+                ("Player3", new UserStats { Elo = 1100, Wins = 8, Losses = 7 })
             };
 
-            _userRepository.GetScoreboardData().Returns(userStats);
+            _userRepository.GetScoreboardData().Returns(scoreboardData);
 
             // Act
             var result = _scoreboardHandler.GetScoreboard();
 
             // Assert
-            Assert.That(result, Is.EqualTo(userStats));
+            Assert.That(result, Is.EqualTo(scoreboardData));
         }
 
         [Test]
         public void GetScoreboard_NoUsers_ReturnsEmptyList()
         {
             // Arrange
-            _userRepository.GetScoreboardData().Returns(new List<UserStats>());
+            _userRepository.GetScoreboardData().Returns(new List<(string Username, UserStats Stats)>());
 
             // Act
             var result = _scoreboardHandler.GetScoreboard();
@@ -61,10 +61,10 @@ namespace MonsterTradingCardGame_2024.Test.Business_Logic
         public void GetScoreboard_HandlesNullFromRepository()
         {
             // Arrange
-            _userRepository.GetScoreboardData().Returns((IEnumerable<UserStats>?)null);
+            _userRepository.GetScoreboardData().Returns((IEnumerable<(string Username, UserStats Stats)>?)null);
 
             // Act
-            var result = _scoreboardHandler.GetScoreboard() ?? Enumerable.Empty<UserStats>();
+            var result = _scoreboardHandler.GetScoreboard() ?? Enumerable.Empty<(string Username, UserStats Stats)>();
 
             // Assert
             Assert.That(result, Is.Empty);
