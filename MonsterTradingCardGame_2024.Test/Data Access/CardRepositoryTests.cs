@@ -123,10 +123,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         {
             // Arrange
             _userRepository.Register("testuser5", "password123");
-            _userRepository.Login("testuser5", "password123");
-            List<User> users = _userRepository.GetUsersByUsernamePrefix("testuser5");
-            User user = users[0];
-            var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork, user.Id)
+            User? user = new User();
+            user = _userRepository.Login("testuser5", "password123");
+            var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork, user?.Id)
             {
                 Id = Guid.NewGuid(),
                 Locked = true
