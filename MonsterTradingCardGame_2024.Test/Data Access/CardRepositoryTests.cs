@@ -122,7 +122,9 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         public void GetCardById_MonsterCard_ReturnsCorrectCard()
         {
             // Arrange
-            var user = CreateTestUser("testuser5", "password123");
+            var userId = Guid.NewGuid(); // Manuell festgelegte User-ID
+            var user = new User(userId, "testuser5", "password123", 20, "token123", 1000, 10, 5); // Benutzer mit expliziter ID erstellen
+            _userRepository.Register(user.Username, user.Password);
             var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork, user.Id)
             {
                 Id = Guid.NewGuid(),
