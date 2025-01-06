@@ -80,14 +80,63 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             {
                 Console.WriteLine($"Attempting to Create Trade Deal...");
 
-                var deal = JsonConvert.DeserializeObject<TradingDeal>(rq.Content);
-                if (deal == null || deal.CardToTradeId == null)
+                // Parse die Eingabe als Dictionary, um Fehler zu vermeiden
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(rq.Content);
+                if (data == null || !data.ContainsKey("Id") || !data.ContainsKey("CardToTrade") || !data.ContainsKey("MinimumDamage"))
                 {
-                    rs.SetClientError("Invalid JSON format or missing required fields", 400);
+                    rs.SetClientError("Invalid JSON format or missing required fields (Id, CardToTrade, MinimumDamage)", 400);
                     return true;
                 }
 
+                // Werte extrahieren
+                if (!Guid.TryParse(data["Id"].ToString(), out var id))
+                {
+                    id = Guid.NewGuid(); // Fallback zu einem neuen GUID
+                }
+
+                if (!Guid.TryParse(data["CardToTrade"].ToString(), out var cardToTradeId))
+                {
+                    rs.SetClientError("Invalid CardToTrade GUID format", 400);
+                    return true;
+                }
+
+                if (!float.TryParse(data["MinimumDamage"].ToString(), out var minimumDamage))
+                {
+                    rs.SetClientError("Invalid MinimumDamage value", 400);
+                    return true;
+                }
+
+                // Element und Species validieren
+                var acceptedElement = data.ContainsKey("AcceptedElement") && Enum.TryParse(typeof(Element), data["AcceptedElement"].ToString(), out var element)
+                    ? (Element)element
+                    : Element.Normal;
+
+                var acceptedSpecies = data.ContainsKey("AcceptedSpecies") && Enum.TryParse(typeof(Species), data["AcceptedSpecies"].ToString(), out var species)
+                    ? (Species)species
+                    : Species.Goblin;
+
+                // Karte laden
+                var cardToTrade = _tradingHandler.GetCardById(cardToTradeId);
+                if (cardToTrade == null)
+                {
+                    rs.SetClientError("Card to trade not found", 404);
+                    return true;
+                }
+
+                // Erstelle das TradingDeal-Objekt
+                var deal = new TradingDeal
+                {
+                    Id = id,
+                    CardToTrade = cardToTrade,
+                    CardToTradeId = cardToTrade.Id,
+                    AcceptedElement = acceptedElement,
+                    AcceptedSpecies = acceptedSpecies,
+                    MinimumDamage = minimumDamage
+                };
+
+                // Trading Deal erstellen
                 _tradingHandler.CreateTradingDeal(deal);
+
                 rs.SetSuccess("Trading deal created successfully", 201);
             }
             catch (Exception ex)
