@@ -118,10 +118,22 @@ namespace MonsterTradingCardGame_2024.Data_Access
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId, Locked)
-                VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId, @Locked)
-            ";
+            if (card is MonsterCard monsterCard)
+            {
+                command.CommandText = @"
+                    INSERT INTO Cards (Id, Name, Damage, ElementType, Species, CardType, OwnerId, Locked)
+                    VALUES (@Id, @Name, @Damage, @ElementType, @Species, @CardType, @OwnerId, @Locked)
+                ";
+                command.Parameters.AddWithValue("@Species", (int)monsterCard.MonsterSpecies);
+            }
+            else
+            {
+                command.CommandText = @"
+                    INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId, Locked)
+                    VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId, @Locked)
+                ";
+            }
+
             command.Parameters.AddWithValue("@Id", card.Id);
             command.Parameters.AddWithValue("@Name", card.Name);
             command.Parameters.AddWithValue("@Damage", card.Damage);
