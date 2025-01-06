@@ -124,6 +124,8 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             const int eloWinChange = 3;
             const int eloLossChange = -5;
             const int eloDrawChange = 1;
+            const int loserCoins = 5;
+            const int winnerCoins = 10;
 
             if (hasWinner)
             {
@@ -140,9 +142,14 @@ namespace MonsterTradingCardGame_2024.Business_Logic
                 loser.Stats.Elo += eloDrawChange;
             }
 
+            // Ensure both players earn at least the minimum coins for participating
+            winner.Coins += winnerCoins;
+            loser.Coins += loserCoins;
+            Console.WriteLine($"{winner.Username} earned coins: {winner.Coins}");
+            Console.WriteLine($"{loser.Username} earned coins: {loser.Coins}");
+
             _userRepository.UpdateUser(winner);
             _userRepository.UpdateUser(loser);
         }
-
-    }
-}
+    } // <- End of BattleHandler class
+} // <- End of MonsterTradingCardGame_2024.Business_Logic namesspace

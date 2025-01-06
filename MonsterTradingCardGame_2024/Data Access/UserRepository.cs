@@ -275,7 +275,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.CommandText = @"
                 SELECT Username, Elo, Wins, Losses
                 FROM Users
-                ORDER BY Elo DESC, Wins DESC, Losses ASC, Username DESC;
+                ORDER BY Elo DESC, Wins DESC, Losses ASC, Username ASC;
             ";
 
             using var reader = command.ExecuteReader();
