@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using MonsterTradingCardGame_2024.Enums;
 
 namespace MonsterTradingCardGame_2024.Http.Endpoints
 {
@@ -76,16 +77,55 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 return true;
             }
 
-            var deal = JsonConvert.DeserializeObject<TradingDeal>(rq.Content);
-            if (deal == null)
-            {
-                rs.SetClientError("Invalid trading deal format", 400);
-                return true;
-            }
-
             try
             {
+                // Parse die Eingabe
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(rq.Content);
+                if (data == null || !data.ContainsKey("Id") || !data.ContainsKey("CardToTrade") || !data.ContainsKey("MinimumDamage"))
+                {
+                    rs.SetClientError("Invalid JSON format or missing required fields", 400);
+                    return true;
+                }
+
+                // Werte extrahieren
+                var id = data["Id"].ToString();
+                if (!Guid.TryParse(data["CardToTrade"].ToString(), out var cardToTradeId))
+                {
+                    rs.SetClientError("Invalid CardToTrade GUID format", 400);
+                    return true;
+                }
+
+                var minimumDamage = float.TryParse(data["MinimumDamage"].ToString(), out var parsedDamage) ? parsedDamage : 0;
+
+                // Optional: Element und Species validieren
+                var acceptedElement = data.ContainsKey("AcceptedElement") && Enum.TryParse(typeof(Element), data["AcceptedElement"].ToString(), out var element)
+                    ? (Element)element
+                    : Element.Normal;
+
+                var acceptedSpecies = data.ContainsKey("AcceptedSpecies") && Enum.TryParse(typeof(Species), data["AcceptedSpecies"].ToString(), out var species)
+                    ? (Species)species
+                    : Species.Goblin;
+
+                // Karte laden
+                var cardToTrade = _tradingHandler.GetCardById(cardToTradeId);
+                if (cardToTrade == null)
+                {
+                    rs.SetClientError("Card to trade not found", 404);
+                    return true;
+                }
+
+                // Erstelle das TradingDeal-Objekt
+                var deal = new TradingDeal
+                {
+                    Id = id ?? Guid.NewGuid().ToString(),
+                    CardToTrade = cardToTrade,
+                    AcceptedElement = acceptedElement,
+                    AcceptedSpecies = acceptedSpecies,
+                    MinimumDamage = minimumDamage
+                };
+
                 _tradingHandler.CreateTradingDeal(deal);
+
                 rs.SetSuccess("Trading deal created successfully", 201);
             }
             catch (Exception ex)
@@ -95,6 +135,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
             return true;
         }
+
 
         private bool HandleAcceptTradingDeal(HttpRequest rq, HttpResponse rs)
         {

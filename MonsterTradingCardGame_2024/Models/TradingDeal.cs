@@ -14,15 +14,17 @@ namespace MonsterTradingCardGame_2024.Models
         {
             Id = Guid.NewGuid().ToString();
             CardToTrade = null; // Null by default
+            CardToTradeId = null; // Null by default
             AcceptedElement = Element.Normal;
             AcceptedSpecies = Species.Goblin;
             MinimumDamage = 0;
         }
         // Constructor for creating a new trading deal
-        public TradingDeal(string id, Card cardToTrade, Element acceptedElement, Species acceptedSpecies, float minimumDamage)
+        public TradingDeal(string id, Card? cardToTrade, Element acceptedElement, Species acceptedSpecies, float minimumDamage)
         {
             Id = id;
             CardToTrade = cardToTrade;
+            CardToTradeId = cardToTrade?.Id;
             AcceptedElement = acceptedElement;
             AcceptedSpecies = acceptedSpecies;
             MinimumDamage = minimumDamage;
@@ -33,6 +35,9 @@ namespace MonsterTradingCardGame_2024.Models
 
         // The card being offered for trade
         public Card? CardToTrade { get; set; }
+
+        // The offered card's Id
+        public Guid? CardToTradeId { get; set; }
 
         // The element of the card the user is willing to accept
         public Element AcceptedElement { get; set; }

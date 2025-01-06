@@ -21,11 +21,18 @@ namespace MonsterTradingCardGame_2024.Business_Logic
 
         public void CreateTradingDeal(TradingDeal deal)
         {
-            if (deal.CardToTrade == null)
-                throw new ArgumentException("Card to trade cannot be null");
+            if (deal.CardToTradeId == null)
+                throw new ArgumentException("CardToTradeId cannot be null");
 
-            if (deal.CardToTrade.Locked)
+            var cardToTrade = _cardRepository.GetCardById(deal.CardToTradeId.Value);
+            if (cardToTrade == null)
+                throw new InvalidOperationException("The specified card does not exist");
+
+            if (cardToTrade.Locked)
                 throw new InvalidOperationException("The card to trade is locked and cannot be offered.");
+
+            // Erstelle das TradingDeal-Objekt
+            deal.CardToTrade = cardToTrade;
 
             _tradingRepository.AddTradingDeal(deal);
         }
@@ -81,6 +88,11 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         public void RemoveTradingDeal(string tradingId)
         {
             _tradingRepository.RemoveTradingDeal(tradingId);
+        }
+
+        public Card? GetCardById(Guid cardId)
+        {
+            return _cardRepository.GetCardById(cardId);
         }
     }
 }
