@@ -58,6 +58,16 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             return new List<Card>();
         }
 
+        public User? GetUserByUsername(string username)
+        {
+            return _userRepository.GetUserByUsername(username);
+        }
+
+        public void UpdateUser(User user)
+        {
+            _userRepository.UpdateUser(user);
+        }
+
         // Returns the user's statistics (ELO, wins, losses)
         public UserStats? GetStatsByToken(string token)
         {

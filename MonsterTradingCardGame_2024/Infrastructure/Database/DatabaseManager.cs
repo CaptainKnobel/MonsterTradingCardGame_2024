@@ -28,7 +28,9 @@ namespace MonsterTradingCardGame_2024.Infrastructure.Database
                                 Token VARCHAR(100) UNIQUE,
                                 Elo INT NOT NULL DEFAULT 100,
                                 Wins INT NOT NULL DEFAULT 0,
-                                Losses INT NOT NULL DEFAULT 0
+                                Losses INT NOT NULL DEFAULT 0,
+                                Bio TEXT DEFAULT NULL,
+                                Image TEXT DEFAULT NULL
                             );
 
                             CREATE TABLE IF NOT EXISTS Cards (

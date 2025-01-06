@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MonsterTradingCardGame_2024.Models
 {
@@ -23,6 +24,8 @@ namespace MonsterTradingCardGame_2024.Models
             Stack = new CardStack();
             Deck = new CardDeck();
             Stats = new UserStats();
+            Bio = string.Empty;
+            Image = string.Empty;
         }
         public User(string username, string password)
         {
@@ -32,8 +35,10 @@ namespace MonsterTradingCardGame_2024.Models
             this.Stack = new CardStack();   // Collection of all the user's cards (stack)
             this.Deck = new CardDeck();     // Deck (the user's best 4 cards for battle)
             this.Stats = new UserStats();   // Default stats with initial values
+            this.Bio = string.Empty;
+            this.Image = string.Empty;
         }
-        // Constructor for loading a user from the database (with all attributes)
+        // Constructor for loading a user from the database (with all attributes except image and bio)
         public User(Guid id, string username, string password, int coins, string token, int elo, int wins, int losses)
         {
             this.Id = id;
@@ -44,6 +49,22 @@ namespace MonsterTradingCardGame_2024.Models
             this.Stack = new CardStack();   // Stack of all cards the user owns
             this.Deck = new CardDeck();     // Best 4 cards selected by the user for battles
             this.Stats = new UserStats(elo, wins, losses);
+            this.Bio = string.Empty;
+            this.Image = string.Empty;
+        }
+        // Constructor for loading a user from the database (with all attributes)
+        public User(Guid id, string username, string password, int coins, string token, int elo, int wins, int losses, string? bio, string? image)
+        {
+            this.Id = id;
+            this.Username = username;
+            this.Password = password;
+            this.Coins = coins;
+            this.Token = token;
+            this.Stack = new CardStack();   // Stack of all cards the user owns
+            this.Deck = new CardDeck();     // Best 4 cards selected by the user for battles
+            this.Stats = new UserStats(elo, wins, losses);
+            this.Bio = bio ?? string.Empty;
+            this.Image = image ?? string.Empty;
         }
 
         // ----------========== [Properties] ==========----------
@@ -70,6 +91,12 @@ namespace MonsterTradingCardGame_2024.Models
 
         // Statistics of the player
         public UserStats Stats { get; set; } = new UserStats();
+        
+        // Short biography
+        public string? Bio { get; set; }
+        
+        // Profile image
+        public string? Image { get; set; }
 
     } // <- End of User class
 } // <- End of MonsterTradingCardGame_2024.Models namesspace

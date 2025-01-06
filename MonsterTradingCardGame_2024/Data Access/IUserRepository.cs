@@ -13,7 +13,8 @@ namespace MonsterTradingCardGame_2024.Data_Access
         User? Login(string username, string password);
         User? GetUserByToken(string token);
         List<User> GetAllUsers();
-        IEnumerable<UserStats> GetScoreboardData();
+        User? GetUserByUsername(string username);
         void UpdateUser(User user);
+        IEnumerable<UserStats> GetScoreboardData();
     }
 }

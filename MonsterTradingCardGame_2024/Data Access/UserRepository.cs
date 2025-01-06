@@ -190,30 +190,39 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return users;
         }
 
-        public IEnumerable<UserStats> GetScoreboardData()
+        public User? GetUserByUsername(string username)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
-            // Alle Benutzer abrufen und nach ELO sortieren
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Elo, Wins, Losses
-                FROM Users
-                ORDER BY Elo DESC";
+        SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses, Bio, Image
+        FROM Users
+        WHERE Username = @Username";
+            command.Parameters.AddWithValue("Username", username);
 
             using var reader = command.ExecuteReader();
-            var userStats = new List<UserStats>();
-            while (reader.Read())
+            if (reader.Read())
             {
-                userStats.Add(new UserStats(
-                    reader.GetInt32(0),  // Elo
-                    reader.GetInt32(1),  // Wins
-                    reader.GetInt32(2)   // Losses
-                ));
+                return new User
+                {
+                    Id = reader.GetGuid(0),
+                    Username = reader.GetString(1),
+                    Password = reader.GetString(2),
+                    Coins = reader.GetInt32(3),
+                    Token = reader.GetString(4),
+                    Stats = new UserStats
+                    {
+                        Elo = reader.GetInt32(5),
+                        Wins = reader.GetInt32(6),
+                        Losses = reader.GetInt32(7)
+                    },
+                    Bio = reader.IsDBNull(8) ? null : reader.GetString(8),
+                    Image = reader.IsDBNull(9) ? null : reader.GetString(9)
+                };
             }
-
-            return userStats;
+            return null;
         }
 
         public void UpdateUser(User user)
@@ -245,5 +254,31 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             command.ExecuteNonQuery();
         }
+        public IEnumerable<UserStats> GetScoreboardData()
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+
+            // Alle Benutzer abrufen und nach ELO sortieren
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT Elo, Wins, Losses
+                FROM Users
+                ORDER BY Elo DESC";
+
+            using var reader = command.ExecuteReader();
+            var userStats = new List<UserStats>();
+            while (reader.Read())
+            {
+                userStats.Add(new UserStats(
+                    reader.GetInt32(0),  // Elo
+                    reader.GetInt32(1),  // Wins
+                    reader.GetInt32(2)   // Losses
+                ));
+            }
+
+            return userStats;
+        }
+
     } // <- End of UserRepository class
 } // <- End of MonsterTradingCardGame_2024.Data_Access namesspace
