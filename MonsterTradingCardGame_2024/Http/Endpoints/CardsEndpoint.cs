@@ -1,5 +1,6 @@
 ﻿using MonsterTradingCardGame_2024.Data_Access;
 using MonsterTradingCardGame_2024.Business_Logic;
+using MonsterTradingCardGame_2024.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

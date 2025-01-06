@@ -121,18 +121,31 @@ namespace MonsterTradingCardGame_2024.Data_Access
         public void AddCard(Card card, NpgsqlConnection connection)
         {
             using var command = connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId, Locked)
-                VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId, @Locked)
-                ON CONFLICT (Id) DO NOTHING;
-            ";
+
+            if (card is MonsterCard monsterCard)
+            {
+                command.CommandText = @"
+                    INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, Species, OwnerId, Locked)
+                    VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @Species, @OwnerId, @Locked)
+                    ON CONFLICT (Id) DO NOTHING;
+                ";
+                command.Parameters.AddWithValue("@Species", (int)monsterCard.MonsterSpecies);
+            }
+            else
+            {
+                command.CommandText = @"
+                    INSERT INTO Cards (Id, Name, Damage, ElementType, CardType, OwnerId, Locked)
+                    VALUES (@Id, @Name, @Damage, @ElementType, @CardType, @OwnerId, @Locked)
+                    ON CONFLICT (Id) DO NOTHING;
+                ";
+            }
             command.Parameters.AddWithValue("@Id", card.Id);
             command.Parameters.AddWithValue("@Name", card.Name);
             command.Parameters.AddWithValue("@Damage", card.Damage);
             command.Parameters.AddWithValue("@ElementType", (int)card.ElementType);
             command.Parameters.AddWithValue("@CardType", (int)card.CardType);
-            command.Parameters.AddWithValue("@OwnerId", card.OwnerId); // OwnerId hinzugefügt
-            command.Parameters.AddWithValue("@Locked", card.Locked);  // Locked hinzugefügt
+            command.Parameters.AddWithValue("@OwnerId", card.OwnerId);
+            command.Parameters.AddWithValue("@Locked", card.Locked);
 
             command.ExecuteNonQuery();
         }
