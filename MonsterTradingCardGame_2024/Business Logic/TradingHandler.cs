@@ -49,9 +49,6 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             if (offeredCard == null || offeredCard.Locked)
                 throw new InvalidOperationException("The offered card is invalid or locked.");
 
-            if (deal.CardToTrade?.Locked == true)
-                throw new InvalidOperationException("The card in the trading deal is locked and cannot be traded.");
-
             if (offeredCard.ElementType != deal.AcceptedElement ||
                 (offeredCard is MonsterCard monsterCard && monsterCard.MonsterSpecies != deal.AcceptedSpecies) ||
                 offeredCard.Damage < deal.MinimumDamage)

@@ -165,7 +165,10 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
                 // Lösche den Trading Deal
                 using var deleteCommand = connection.CreateCommand();
-                deleteCommand.CommandText = @"DELETE FROM TradingDeals WHERE Id = @Id;";
+                deleteCommand.CommandText = @"
+                    DELETE FROM TradingDeals
+                    WHERE Id = @Id;
+                ";
                 deleteCommand.Parameters.AddWithValue("@Id", id);
                 deleteCommand.ExecuteNonQuery();
 
