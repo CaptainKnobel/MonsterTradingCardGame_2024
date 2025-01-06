@@ -12,11 +12,13 @@ namespace MonsterTradingCardGame_2024.Business_Logic
     {
         private readonly ITradingRepository _tradingRepository;
         private readonly ICardRepository _cardRepository;
+        private readonly IUserRepository _userRepository;
 
-        public TradingHandler(ITradingRepository tradingRepository, ICardRepository cardRepository)
+        public TradingHandler(ITradingRepository tradingRepository, ICardRepository cardRepository, IUserRepository userRepository)
         {
             _tradingRepository = tradingRepository;
             _cardRepository = cardRepository;
+            _userRepository = userRepository;
         }
 
         public void CreateTradingDeal(TradingDeal deal)
@@ -40,7 +42,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         public bool AcceptTradingDeal(Guid tradingId, Guid offeredCardId)
         {
             var deal = _tradingRepository.GetTradingDealById(tradingId);
-            if (deal == null)
+            if (deal == null || deal.CardToTradeId == null)
                 throw new InvalidOperationException("Trading deal not found");
 
             var offeredCard = _cardRepository.GetCardById(offeredCardId);
@@ -94,6 +96,10 @@ namespace MonsterTradingCardGame_2024.Business_Logic
         public Card? GetCardById(Guid cardId)
         {
             return _cardRepository.GetCardById(cardId);
+        }
+        public User? GetUserByToken(string token)
+        {
+            return _userRepository.GetUserByToken(token);
         }
     }
 }

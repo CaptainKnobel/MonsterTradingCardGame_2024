@@ -222,6 +222,36 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
             try
             {
+                // Check if the User tries to engage in tradecest, because that's naughty!
+                var token = rq.Headers.ContainsKey("Authorization")
+                    ? rq.Headers["Authorization"].Replace("Bearer ", "").Trim()
+                    : null;
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    rs.SetClientError("Missing or invalid Authorization header", 401);
+                    return true;
+                }
+
+                var user = _tradingHandler.GetUserByToken(token);
+                if (user == null)
+                {
+                    rs.SetClientError("Unauthorized", 401);
+                    return true;
+                }
+                var deal = _tradingHandler.GetTradingDealById(tradingId);
+                if (deal == null)
+                {
+                    rs.SetClientError("Trading deal not found", 404);
+                    return true;
+                }
+                if (deal.CardToTrade?.OwnerId == user.Id)
+                {
+                    rs.SetClientError("You cannot trade with yourself", 400);
+                    return true;
+                }
+
+                // Try to accept the trading deal.
                 if (_tradingHandler.AcceptTradingDeal(tradingId, offeredCardId))
                 {
                     rs.SetSuccess("Trading deal accepted", 200);
