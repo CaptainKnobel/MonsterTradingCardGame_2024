@@ -213,7 +213,11 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 foreach (var card in cards)
                 {
                     using var command = connection.CreateCommand();
-                    command.CommandText = "UPDATE Cards SET OwnerId = @NewOwnerId WHERE Id = @CardId;";
+                    command.CommandText = @"
+                        UPDATE Cards
+                        SET OwnerId = @NewOwnerId
+                        WHERE Id = @CardId;
+                    ";
                     command.Parameters.AddWithValue("@NewOwnerId", newOwnerId);
                     command.Parameters.AddWithValue("@CardId", card.Id);
 
