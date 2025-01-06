@@ -190,8 +190,10 @@ namespace MonsterTradingCardGame_2024.Data_Access
             return users;
         }
         // 14)
-        public User? GetUserByUsername(string username)
+        public List<User> GetUsersByUsernamePrefix(string usernamePrefix)
         {
+            var users = new List<User>();
+
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
@@ -199,14 +201,14 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.CommandText = @"
                 SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses, Bio, Image
                 FROM Users
-                WHERE Username = @Username;
+                WHERE Username ILIKE @Username || '%';
             ";
-            command.Parameters.AddWithValue("Username", username);
+            command.Parameters.AddWithValue("Username", usernamePrefix);
 
             using var reader = command.ExecuteReader();
-            if (reader.Read())
+            while (reader.Read())
             {
-                return new User(
+                users.Add(new User(
                     id: reader.GetGuid(0),
                     username: reader.GetString(1),
                     password: reader.GetString(2),
@@ -217,9 +219,9 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     losses: reader.GetInt32(7),
                     bio: reader.IsDBNull(8) ? null : reader.GetString(8),
                     image: reader.IsDBNull(9) ? null : reader.GetString(9)
-                );
+                ));
             }
-            return null;
+            return users;
         }
         // 14)
         public void UpdateUser(User user)

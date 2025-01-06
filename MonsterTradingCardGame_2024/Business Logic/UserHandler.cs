@@ -60,7 +60,18 @@ namespace MonsterTradingCardGame_2024.Business_Logic
 
         public User? GetUserByUsername(string username)
         {
-            return _userRepository.GetUserByUsername(username);
+            var users = _userRepository.GetUsersByUsernamePrefix(username);
+
+            if (users.Count == 1)
+            {
+                return users[0];    // Genau ein Benutzer gefunden
+            }
+
+            Console.WriteLine(users.Count == 0
+                ? $"No user found for username: {username}"
+                : $"Ambiguous username: {username}. Found {users.Count} matches.");
+
+            return null;    // Entweder kein Treffer oder mehrere Treffer
         }
 
         public void UpdateUser(User user)
