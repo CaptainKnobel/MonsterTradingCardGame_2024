@@ -189,7 +189,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             return users;
         }
-
+        // 14)
         public User? GetUserByUsername(string username)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -197,40 +197,44 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
-        SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses, Bio, Image
-        FROM Users
-        WHERE Username = @Username";
+                SELECT Id, Username, Password, Coins, Token, Elo, Wins, Losses, Bio, Image
+                FROM Users
+                WHERE Username = @Username;
+            ";
             command.Parameters.AddWithValue("Username", username);
 
             using var reader = command.ExecuteReader();
             if (reader.Read())
             {
-                return new User
-                {
-                    Id = reader.GetGuid(0),
-                    Username = reader.GetString(1),
-                    Password = reader.GetString(2),
-                    Coins = reader.GetInt32(3),
-                    Token = reader.GetString(4),
-                    Stats = new UserStats
-                    {
-                        Elo = reader.GetInt32(5),
-                        Wins = reader.GetInt32(6),
-                        Losses = reader.GetInt32(7)
-                    },
-                    Bio = reader.IsDBNull(8) ? null : reader.GetString(8),
-                    Image = reader.IsDBNull(9) ? null : reader.GetString(9)
-                };
+                return new User(
+                    id: reader.GetGuid(0),
+                    username: reader.GetString(1),
+                    password: reader.GetString(2),
+                    coins: reader.GetInt32(3),
+                    token: reader.GetString(4),
+                    elo: reader.GetInt32(5),
+                    wins: reader.GetInt32(6),
+                    losses: reader.GetInt32(7),
+                    bio: reader.IsDBNull(8) ? null : reader.GetString(8),
+                    image: reader.IsDBNull(9) ? null : reader.GetString(9)
+                );
             }
             return null;
         }
-
+        // 14)
         public void UpdateUser(User user)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
             using var command = connection.CreateCommand();
+
+            // Sicherstellen, dass ein Token existiert
+            if (string.IsNullOrWhiteSpace(user.Token))
+            {
+                user.Token = GenerateToken(user.Username); // Neues Token generieren, falls keines vorhanden ist
+            }
+
             command.CommandText = @"
                 UPDATE Users
                 SET 
@@ -240,20 +244,25 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     Token = @Token,
                     Elo = @Elo,
                     Wins = @Wins,
-                    Losses = @Losses
-                WHERE Id = @Id
+                    Losses = @Losses,
+                    Bio = @Bio,
+                    Image = @Image
+                WHERE Id = @Id;
             ";
             command.Parameters.AddWithValue("Id", user.Id);
             command.Parameters.AddWithValue("Username", user.Username ?? string.Empty);
             command.Parameters.AddWithValue("Password", user.Password ?? string.Empty);
-            command.Parameters.AddWithValue("Coins", Math.Max(0, user.Coins)); // Verhindert negative Coins
-            command.Parameters.AddWithValue("Token", user.Token ?? string.Empty);
-            command.Parameters.AddWithValue("Elo", user.Stats?.Elo ?? 100);  // Fallback für fehlende Stats
-            command.Parameters.AddWithValue("Wins", user.Stats?.Wins ?? 0);
-            command.Parameters.AddWithValue("Losses", user.Stats?.Losses ?? 0);
+            command.Parameters.AddWithValue("Coins", Math.Max(0, user.Coins));          // Verhindert negative Coins
+            command.Parameters.AddWithValue("Token", user.Token ?? string.Empty);       // Default auf leeren String
+            command.Parameters.AddWithValue("Elo", user.Stats?.Elo ?? 100);             // Fallback für fehlende Stats
+            command.Parameters.AddWithValue("Wins", user.Stats?.Wins ?? 0);             // _"_
+            command.Parameters.AddWithValue("Losses", user.Stats?.Losses ?? 0);         // _"_
+            command.Parameters.AddWithValue("Bio", user.Bio ?? string.Empty);           // Default auf leeren String
+            command.Parameters.AddWithValue("Image", user.Image ?? string.Empty);       // _"_
 
             command.ExecuteNonQuery();
         }
+
         public IEnumerable<UserStats> GetScoreboardData()
         {
             using var connection = new NpgsqlConnection(_connectionString);

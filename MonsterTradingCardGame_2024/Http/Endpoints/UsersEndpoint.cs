@@ -156,43 +156,5 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             rs.SetSuccess("User profile updated successfully", 200);
             return true;
         }
-
-
-        /* alter code der (auch?) funktioniert hat
-        // Handles HTTP POST requests for registering users
-        public bool HandleRequest(HttpRequest rq, HttpResponse rs)
-        {
-            if (rq.Method == HttpMethod.POST && rq.Path[1] == "users")
-            {
-                if (string.IsNullOrEmpty(rq.Content))
-                {
-                    rs.SetClientError("No content provided", 400);
-                    return true;
-                }
-
-                // Deserialize the JSON content into a User object
-                var userData = JsonSerializer.Deserialize<User>(rq.Content);
-                if (userData == null || string.IsNullOrEmpty(userData.Username) || string.IsNullOrEmpty(userData.Password))
-                {
-                    rs.SetClientError("Invalid data provided", 400);
-                    return true;
-                }
-
-                // Call the UserHandler to register the user
-                bool registrationSuccess = _userHandler.RegisterUser(userData.Username, userData.Password);
-                if (registrationSuccess)
-                {
-                    rs.SetSuccess("User created", 201);
-                }
-                else
-                {
-                    rs.SetClientError("User already exists", 409); // Conflict
-                }
-                return true;
-            }
-
-            return false; // Unhandled request
-        }
-        */
     } // <- End of UsersEndpoint class
 } // <- End of MonsterTradingCardGame_2024.Http.Endpoints namesspace
