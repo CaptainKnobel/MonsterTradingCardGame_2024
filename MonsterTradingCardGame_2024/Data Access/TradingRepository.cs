@@ -143,11 +143,39 @@ namespace MonsterTradingCardGame_2024.Data_Access
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
-            using var command = connection.CreateCommand();
-            command.CommandText = @"DELETE FROM TradingDeals WHERE Id = @Id;";
-            command.Parameters.AddWithValue("@Id", id);
+            using var transaction = connection.BeginTransaction();
+            try
+            {
+                // Hole die Karte, bevor der Deal gelöscht wird
+                var tradingDeal = GetTradingDealById(id);
+                if (tradingDeal == null || tradingDeal?.CardToTradeId == null)
+                {
+                    throw new InvalidOperationException("Trading deal not found.");
+                }
 
-            command.ExecuteNonQuery();
+                // Entsperre die Karte
+                using var unlockCommand = connection.CreateCommand();
+                unlockCommand.CommandText = @"
+                    UPDATE Cards
+                    SET Locked = FALSE
+                    WHERE Id = @CardId;
+                ";
+                unlockCommand.Parameters.AddWithValue("@CardId", tradingDeal.CardToTradeId);
+                unlockCommand.ExecuteNonQuery();
+
+                // Lösche den Trading Deal
+                using var deleteCommand = connection.CreateCommand();
+                deleteCommand.CommandText = @"DELETE FROM TradingDeals WHERE Id = @Id;";
+                deleteCommand.Parameters.AddWithValue("@Id", id);
+                deleteCommand.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         public List<TradingDeal> GetAllTradingDeals()
