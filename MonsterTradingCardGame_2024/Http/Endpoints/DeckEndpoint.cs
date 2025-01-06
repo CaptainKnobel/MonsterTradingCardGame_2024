@@ -1,5 +1,6 @@
 ﻿using MonsterTradingCardGame_2024.Business_Logic;
 using MonsterTradingCardGame_2024.Data_Access;
+using MonsterTradingCardGame_2024.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -52,11 +53,24 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             }
 
             var deck = _deckHandler.GetDeckByUserId(user.Id);
+            Console.WriteLine($"Deck Retrieved: {deck.Count()} cards for user {user.Id}");
 
-            rs.SetJsonContentType();
-            rs.Content = JsonConvert.SerializeObject(deck, Formatting.Indented);
-            rs.SetSuccess("Deck retrieved successfully", 200);
+            var response = new
+            {
+                message = "Deck retrieved successfully",
+                cards = deck.Select(card => new
+                {
+                    card.Id,
+                    card.Name,
+                    card.Damage,
+                    card.ElementType,
+                    card.CardType,
+                    card.OwnerId,
+                    card.Locked
+                }).ToList()
+            };
 
+            rs.SetSuccess(JsonConvert.SerializeObject(response, Formatting.Indented), 200);
             return true;
         }
 
@@ -83,7 +97,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 return true;
             }
 
-            var cardIds = JsonConvert.DeserializeObject<IEnumerable<Guid>>(rq.Content);
+            var cardIds = JsonConvert.DeserializeObject<List<Guid>>(rq.Content);
             if (cardIds == null || cardIds.Count() != 4)
             {
                 rs.SetClientError("Deck must contain exactly 4 valid card IDs", 400);

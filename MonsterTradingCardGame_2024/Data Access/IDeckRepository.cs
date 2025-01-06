@@ -9,7 +9,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
 {
     public interface IDeckRepository
     {
-        IEnumerable<Card> GetDeckByUserId(Guid userId);
+        List<Card> GetDeckByUserId(Guid userId);
         bool UpdateDeck(Guid userId, IEnumerable<Guid> cardIds);
     }
 }

@@ -169,10 +169,10 @@ namespace MonsterTradingCardGame_2024.Data_Access
                     using (var command = connection.CreateCommand())
                     {
                         command.CommandText = @"
-                    SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId
-                    FROM Cards
-                    WHERE Id = ANY(@CardIds);
-                ";
+                            SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId
+                            FROM Cards
+                            WHERE Id = ANY(@CardIds);
+                        ";
                         command.Parameters.AddWithValue("@CardIds", cardIds);
 
                         using (var reader = command.ExecuteReader())

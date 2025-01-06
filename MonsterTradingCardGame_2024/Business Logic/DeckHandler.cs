@@ -19,7 +19,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             _cardRepository = cardRepository;
         }
 
-        public IEnumerable<Card> GetDeckByUserId(Guid userId)
+        public List<Card> GetDeckByUserId(Guid userId)
         {
             return _deckRepository.GetDeckByUserId(userId);
         }
@@ -29,6 +29,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             // 1. Deck muss genau 4 Karten enthalten
             if (cardIds.Count() != 4)
             {
+                Console.WriteLine($"User {userId} owns no cards.");
                 return false;
             }
 
@@ -37,7 +38,7 @@ namespace MonsterTradingCardGame_2024.Business_Logic
             return cardIds.All(id => userCards.Any(card => card.Id == id));
         }
 
-        public bool UpdateDeck(Guid userId, IEnumerable<Guid> cardIds)
+        public bool UpdateDeck(Guid userId, List<Guid> cardIds)
         {
             if (!ValidateDeck(cardIds, userId))
             {
