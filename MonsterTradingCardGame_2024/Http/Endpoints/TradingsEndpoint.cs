@@ -254,7 +254,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                 // Try to accept the trading deal.
                 if (_tradingHandler.AcceptTradingDeal(tradingId, offeredCardId))
                 {
-                    rs.SetSuccess("Trading deal accepted", 200);
+                    rs.SetSuccess("Trading deal accepted", 201);
                 }
                 else
                 {
