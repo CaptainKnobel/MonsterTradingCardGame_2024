@@ -1,73 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.CardsEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="6.75" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.CardsEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="12.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAABAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\CardsEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.DeckEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="7.5" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.DeckEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="14.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAABAIAAAAAAAAAAAAAAABAAAAIAAAAA=</HashCode>
       <FileName>Http\Endpoints\DeckEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.PackagesEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="5.25" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.PackagesEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAgAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\PackagesEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.ScoreboardEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="9" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.ScoreboardEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="21.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAABAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\ScoreboardEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.SessionsEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="4.5" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.SessionsEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\SessionsEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.StatsEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="8.25" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.StatsEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="17" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\StatsEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.TradingsEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="9.75" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.TradingsEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="23.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAFAAAAAAAhAAAAAQAAAACAgAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\TradingsEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.TransactionsEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="6" Width="1.5" />
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.TransactionsEndpoint" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="10.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
       <FileName>Http\Endpoints\TransactionsEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.UsersEndpoint" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.UsersEndpoint" BaseTypeListCollapsed="true">
     <Position X="9.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>ACAUAAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Http\Endpoints\UsersEndpoint.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -102,7 +102,7 @@
   <Class Name="MonsterTradingCardGame_2024.Http.HttpServer">
     <Position X="1" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAEBAAAAAAAAAAAgAAAAgEAAAAAI=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAEBAAAAAAAAAAAgAIAAgEAAAAAI=</HashCode>
       <FileName>Http\HttpServer.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -117,42 +117,39 @@
     </TypeIdentifier>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Business_Logic.TradingHandler">
-    <Position X="13.5" Y="8.5" Width="1.5" />
+    <Position X="13.5" Y="9.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAQAAAAAYAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAgAQAQAgAAAAABAAIAAACAAAIABAAAAAAAAgA=</HashCode>
       <FileName>Business Logic\TradingHandler.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="tradingDeals" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Business_Logic.TransactionHandler">
-    <Position X="13.5" Y="7" Width="1.5" />
+    <Position X="13.5" Y="7.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAYAAAAAAAAAAAIAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
       <FileName>Business Logic\TransactionHandler.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Business_Logic.UserHandler">
     <Position X="13.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAAACAAAIAAAQAAAAAAABAAQAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <HashCode>EAAACAAgIAAAQAAAEgAABAAUARAAAAAAAAAAAAAAAAU=</HashCode>
       <FileName>Business Logic\UserHandler.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.Card">
-    <Position X="21.25" Y="10.25" Width="1.5" />
+    <Position X="21.5" Y="10.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACBACAAAAAAAAAAAAAAAQAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACBACoAAAAAAAAAAAAAAQAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Card.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="CardType" />
       <Property Name="ElementType" />
+      <Property Name="CardType" />
     </ShowAsAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.CardDeck">
-    <Position X="23" Y="7.5" Width="1.5" />
+    <Position X="23.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAAAAQAAAAAAAAIAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\CardDeck.cs</FileName>
@@ -162,7 +159,7 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.CardPackage">
-    <Position X="19.5" Y="7.5" Width="1.5" />
+    <Position X="19.75" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\CardPackage.cs</FileName>
@@ -172,7 +169,7 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.CardStack">
-    <Position X="21.25" Y="7.5" Width="1.5" />
+    <Position X="21.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAAAAQAAAAAAAAIAAgAAABAAAAAAAAAAAA=</HashCode>
       <FileName>Models\CardStack.cs</FileName>
@@ -182,7 +179,7 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.MonsterCard">
-    <Position X="23.75" Y="10" Width="1.5" />
+    <Position X="24" Y="10" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\MonsterCard.cs</FileName>
@@ -192,75 +189,166 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.SpellCard">
-    <Position X="23.75" Y="11.75" Width="1.5" />
+    <Position X="24" Y="11.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\SpellCard.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.TradingDeal">
-    <Position X="21.25" Y="15.5" Width="1.5" />
+    <Position X="21.5" Y="15.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAABAAAAAAAAAABAAAAAAAAAAAAAAACIAA=</HashCode>
+      <HashCode>AAACAAAAAAAABAAAAAAAAAABAACAAAAAAAAAAAACIAA=</HashCode>
       <FileName>Models\TradingDeal.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
+      <Property Name="CardToTrade" />
       <Property Name="AcceptedElement" />
       <Property Name="AcceptedSpecies" />
-      <Property Name="CardToTrade" />
     </ShowAsAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.User">
-    <Position X="19.5" Y="2.75" Width="1.5" />
+    <Position X="19.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABACAAAAAAAAAAAAEwAACAAEgQAACAACAABAAAABAAQ=</HashCode>
+      <HashCode>ABACAAAAAAAAAAAACQAACAAAgAAAABACAABAAAABAAA=</HashCode>
       <FileName>Models\User.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Deck" />
       <Property Name="Stack" />
+      <Property Name="Deck" />
       <Property Name="Stats" />
     </ShowAsAssociation>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Models.UserStats">
-    <Position X="21.75" Y="2.75" Width="1.5" />
+    <Position X="22" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAgAAAIAAAAAAA=</HashCode>
       <FileName>Models\UserStats.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Data_Access.PackageRepository">
-    <Position X="15.5" Y="5.25" Width="1.5" />
+    <Position X="15.5" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAABAEAAAAAAAAAACAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAIBAECAAAAAAAAAAAAAAAAIAAAAAIAQAAAAAAAAA=</HashCode>
       <FileName>Data Access\PackageRepository.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="packages" />
-    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Data_Access.UserRepository">
     <Position X="15.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAAAAAEAQAAAAAAAAAAAAAAABAAAAAAAQAAEAAAA=</HashCode>
+      <HashCode>AAAAAAAAAEAQAAAEAAAAAAgAAQABAAAIAAAQAAEAAAA=</HashCode>
       <FileName>Data Access\UserRepository.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="users" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="MonsterTradingCardGame_2024.JsonConverters.CardConverter">
-    <Position X="11.5" Y="5.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
-      <FileName>JsonConverters\CardConverter.cs</FileName>
-    </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="MonsterTradingCardGame_2024.Program">
     <Position X="1" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.JsonConversion.CardConverter">
+    <Position X="11.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAQQAAAAACAAAAAAAAAAAAAAAAAAAAAAASAA=</HashCode>
+      <FileName>Http\Endpoints\JsonConversion\CardConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Infrastructure.Database.DatabaseManager">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\Database\DatabaseManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Infrastructure.BattleQueue">
+    <Position X="11.5" Y="19.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Infrastructure\BattleQueue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Http.Endpoints.BattleEndpoint">
+    <Position X="9.5" Y="19" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAIAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\Endpoints\BattleEndpoint.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Data_Access.CardRepository">
+    <Position X="15.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAIAAAAAAAAAAAAAAAAAAAQAAAAAAIAAAAAAAAAgA=</HashCode>
+      <FileName>Data Access\CardRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Data_Access.DeckRepository">
+    <Position X="15.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAABAAAACAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Data Access\DeckRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Data_Access.TradingRepository">
+    <Position X="15.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAACAAAIIAAAQAAAAAAA=</HashCode>
+      <FileName>Data Access\TradingRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Business_Logic.BattleHandler">
+    <Position X="13.5" Y="21.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgEAAAAAACAAAICAgAAAAAAAAABAQAAAAAAAA=</HashCode>
+      <FileName>Business Logic\BattleHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Services.Business_Logic.BattleService">
+    <Position X="16.25" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAIAAAAAAAAAAAAAAAAAAAAgAAABA=</HashCode>
+      <FileName>Business Logic\Services\BattleService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Business_Logic.Services.BonusService">
+    <Position X="16.25" Y="23.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAECAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Business Logic\Services\BonusService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Business_Logic.CardHandler">
+    <Position X="13.5" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAQAAAAAAAJAAAAAAAAAA=</HashCode>
+      <FileName>Business Logic\CardHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Business_Logic.DeckHandler">
+    <Position X="13.5" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAACACAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Business Logic\DeckHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Business_Logic.ScoreboardHandler">
+    <Position X="13.5" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Business Logic\ScoreboardHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame_2024.Business_Logic.PackageHandler">
+    <Position X="13.5" Y="19.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAABAAA=</HashCode>
+      <FileName>Business Logic\PackageHandler.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="MonsterTradingCardGame_2024.Http.Endpoints.IHttpEndpoint">
@@ -271,21 +359,21 @@
     </TypeIdentifier>
   </Interface>
   <Enum Name="MonsterTradingCardGame_2024.Enums.CardType">
-    <Position X="17.75" Y="10" Width="1.5" />
+    <Position X="18" Y="10" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAgAAAAAAAAA=</HashCode>
       <FileName>Enums\CardType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="MonsterTradingCardGame_2024.Enums.Element">
-    <Position X="17.75" Y="11.25" Width="1.5" />
+    <Position X="18" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAQAAAAAAAAAsAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Enums\Element.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="MonsterTradingCardGame_2024.Enums.Species">
-    <Position X="27" Y="10" Width="1.5" />
+    <Position X="27.25" Y="10" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAEAAAAABAAAAAAAAAAIAAAgAAAIAAAAAAA=</HashCode>
       <FileName>Enums\Species.cs</FileName>

@@ -36,7 +36,7 @@ namespace MonsterTradingCardGame_2024.Services.Business_Logic
 
         private int CompareMonsters(MonsterCard monster1, MonsterCard monster2)
         {
-            // Beispielregel: Drachen schlagen Goblins automatisch
+            // Spielregel: Drachen schlagen Goblins automatisch
             if (monster1.MonsterSpecies == Species.Dragon && monster2.MonsterSpecies == Species.Goblin)
                 return 1;
             if (monster2.MonsterSpecies == Species.Dragon && monster1.MonsterSpecies == Species.Goblin)
@@ -48,7 +48,7 @@ namespace MonsterTradingCardGame_2024.Services.Business_Logic
 
         private int CompareSpells(SpellCard spell1, SpellCard spell2)
         {
-            // Beispielregel: Wasser schlägt Feuer
+            // Spielregel: Wasser schlägt Feuer
             if (spell1.ElementType == Element.Water && spell2.ElementType == Element.Fire)
                 return 1;
             if (spell2.ElementType == Element.Water && spell1.ElementType == Element.Fire)
@@ -60,7 +60,7 @@ namespace MonsterTradingCardGame_2024.Services.Business_Logic
 
         private int CompareMonsterWithSpell(MonsterCard monster, SpellCard spell)
         {
-            // Beispielregel: Zauber dominieren basierend auf Element-Typ
+            // Spielregel: Zauber dominieren basierend auf Element-Typ
             if (spell.ElementType == Element.Fire && monster.ElementType == Element.Earth)
                 return 1;
             if (spell.ElementType == Element.Water && monster.ElementType == Element.Fire)
