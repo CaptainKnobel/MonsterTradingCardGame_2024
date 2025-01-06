@@ -27,7 +27,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
             command.CommandText = @"
                 SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId, Locked
                 FROM Cards
-                WHERE OwnerId = @UserId
+                WHERE OwnerId = @UserId;
             ";
             command.Parameters.AddWithValue("@UserId", userId);
 
