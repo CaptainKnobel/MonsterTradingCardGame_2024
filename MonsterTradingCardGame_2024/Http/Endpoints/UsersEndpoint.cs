@@ -121,6 +121,8 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             string requestedUsername = rq.Path[2];
 
             var requestingUser = _userHandler.FindUserByToken(token);
+            Console.WriteLine($"Requesting UserName: {requestingUser?.Username}");
+            Console.WriteLine($"Requested UserName:  {requestedUsername}");
             if (requestingUser == null || requestingUser.Username != requestedUsername)
             {
                 rs.SetClientError("Forbidden - Cannot update another user's profile", 403);
