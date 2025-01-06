@@ -57,6 +57,12 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 var cardIds = reader.GetFieldValue<Guid[]>(1);  // Reads the UUID-Array colimn from CardIds
 
                 var cards = GetCardsByIds(cardIds);
+
+                Console.WriteLine($"Retrieved package {packageId} with cards:");
+                foreach (var card in cards)
+                {
+                    Console.WriteLine($"Card {card.Id}, OwnerId: {card.OwnerId}");
+                }
                 DeletePackageById(packageId);   // Remove it from the available list
                 return cards;
             }
@@ -197,7 +203,14 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 }
 
                 transaction.Commit();
+
+                // Update local Card objects
+                foreach(var card in cards)
+                {
+                    card.OwnerId = newOwnerId;
+                }
                 Console.WriteLine($"All cards successfully transferred.");
+
                 return true;
             }
             catch (Exception ex)
