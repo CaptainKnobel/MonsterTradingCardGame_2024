@@ -152,35 +152,41 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
         public List<Card> GetCardsByIds(Guid[] cardIds)
         {
-            using var connection = new NpgsqlConnection(_connectionString);
-            connection.Open();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId FROM Cards WHERE Id = ANY(@CardIds);";
-            command.Parameters.AddWithValue("@CardIds", cardIds);
-
-            using var reader = command.ExecuteReader();
             var cards = new List<Card>();
-            while (reader.Read())
-            {
-                var id = reader.GetGuid(0);
-                var name = reader.GetString(1);
-                var damage = reader.GetDouble(2);
-                var elementType = (Element)reader.GetInt32(3);
-                var cardType = (CardType)reader.GetInt32(5);
-                var ownerId = reader.GetGuid(6);
 
-                if (cardType == CardType.Monster)
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
                 {
-                    var species = (Species)reader.GetInt32(4);
-                    cards.Add(new MonsterCard(name, damage, elementType, species, ownerId));
-                }
-                else
-                {
-                    cards.Add(new SpellCard(name, damage, elementType, ownerId));
+                    command.CommandText = "SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId FROM Cards WHERE Id = ANY(@CardIds);";
+                    command.Parameters.AddWithValue("@CardIds", cardIds);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var id = reader.GetGuid(0);
+                            var name = reader.GetString(1);
+                            var damage = reader.GetDouble(2);
+                            var elementType = (Element)reader.GetInt32(3);
+                            var cardType = (CardType)reader.GetInt32(5);
+                            var ownerId = reader.GetGuid(6);
+
+                            if (cardType == CardType.Monster)
+                            {
+                                var species = (Species)reader.GetInt32(4);
+                                cards.Add(new MonsterCard(name, damage, elementType, species, ownerId));
+                            }
+                            else
+                            {
+                                cards.Add(new SpellCard(name, damage, elementType, ownerId));
+                            }
+                        }
+                    }
                 }
             }
-
             return cards;
         }
 

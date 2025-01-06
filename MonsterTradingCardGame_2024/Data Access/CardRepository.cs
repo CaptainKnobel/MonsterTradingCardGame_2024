@@ -1,11 +1,13 @@
 ﻿using MonsterTradingCardGame_2024.Enums;
 using MonsterTradingCardGame_2024.Models;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace MonsterTradingCardGame_2024.Data_Access
 {
@@ -20,44 +22,57 @@ namespace MonsterTradingCardGame_2024.Data_Access
 
         public List<Card> GetCardsByUserId(Guid userId)
         {
-            using var connection = new NpgsqlConnection(_connectionString);
-            connection.Open();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-                SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId, Locked
-                FROM Cards
-                WHERE OwnerId = @UserId;
-            ";
-            command.Parameters.AddWithValue("@UserId", userId);
-
-            using var reader = command.ExecuteReader();
             var cards = new List<Card>();
-            while (reader.Read())
+
+            if (userId == Guid.Empty)
             {
-                var id = reader.GetGuid(0);
-                var name = reader.GetString(1);
-                var damage = reader.GetDouble(2);
-                var elementType = (Element)reader.GetInt32(3);
-                var cardType = (CardType)reader.GetInt32(5);
-                var ownerId = reader.GetGuid(6);
-                var locked = reader.GetBoolean(7);
+                Console.WriteLine($"userId was Empty: {userId}");
+                throw new ArgumentException("Invalid UserId provided.");
+            }
 
-                Console.WriteLine($"Card Retrieved: ID={id}, OwnerID={ownerId}, Name={name}");
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
 
-                if (cardType == CardType.Monster)
+                using (var command = connection.CreateCommand())
                 {
-                    var species = (Species)reader.GetInt32(4);
-                    var monsterCard = new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked, Id = id };
-                    cards.Add(monsterCard);
-                }
-                else
-                {
-                    var spellCard = new SpellCard(name, damage, elementType, ownerId) { Locked = locked, Id = id };
-                    cards.Add(spellCard);
+                    command.CommandText = @"
+                        SELECT Id, Name, Damage, ElementType, Species, CardType, OwnerId, Locked
+                        FROM Cards
+                        WHERE OwnerId = @UserId;
+                    ";
+                    command.Parameters.AddWithValue("UserId", userId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var id = reader.GetGuid(0);
+                            var name = reader.GetString(1);
+                            var damage = reader.GetDouble(2);
+                            var elementType = (Element)reader.GetInt32(3);
+                            var cardType = (CardType)reader.GetInt32(5);
+                            var ownerId = reader.GetGuid(6);
+                            var locked = reader.GetBoolean(7);
+
+                            Console.WriteLine($"Card Retrieved: ID={id}, OwnerID={ownerId}, Name={name}");
+
+                            if (cardType == CardType.Monster)
+                            {
+                                var species = (Species)reader.GetInt32(4);
+                                var monsterCard = new MonsterCard(name, damage, elementType, species, ownerId) { Locked = locked, Id = id };
+                                cards.Add(monsterCard);
+                            }
+                            else
+                            {
+                                var spellCard = new SpellCard(name, damage, elementType, ownerId) { Locked = locked, Id = id };
+                                cards.Add(spellCard);
+                            }
+                        }
+                    }
+                    return cards;
                 }
             }
-            return cards;
         }
 
         public Card? GetCardById(Guid cardId)
