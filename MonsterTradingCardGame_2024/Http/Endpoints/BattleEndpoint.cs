@@ -1,4 +1,5 @@
-﻿using MonsterTradingCardGame_2024.Business_Logic;
+﻿using MonsterTradingCardGame_2024.Models;
+using MonsterTradingCardGame_2024.Business_Logic;
 using MonsterTradingCardGame_2024.Infrastructure;
 using Newtonsoft.Json;
 using System;
@@ -24,24 +25,34 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
         {
             if (rq.Method == HttpMethod.POST && rq.Path[1] == "battles")
             {
-                if (string.IsNullOrWhiteSpace(rq.Content))
+                // Check, if the Authorization-Header exists
+                if (!rq.Headers.ContainsKey("Authorization") || !rq.Headers["Authorization"].StartsWith("Bearer "))
                 {
-                    rs.SetClientError("Invalid request", 400);
+                    rs.SetClientError("Missing or invalid Authorization header", 400);
                     return true;
                 }
 
-                // Deserialize JSON content directly into a dictionary
-                var tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(rq.Content);
+                // Token aus dem Authorization-Header extrahieren
+                string playerToken = rq.Headers["Authorization"].Substring("Bearer ".Length);
 
                 // Validate input tokens
-                if (tokens == null || !tokens.ContainsKey("PlayerToken") || string.IsNullOrEmpty(tokens["PlayerToken"]))
+                if (playerToken == null || string.IsNullOrEmpty(playerToken))
                 {
                     rs.SetClientError("Player token is required", 400);
                     return true;
                 }
 
-                var playerToken = tokens["PlayerToken"];
-                var bonus = tokens.ContainsKey("Bonus") ? tokens["Bonus"] : null;
+                // Optionaler Bonus aus der Anfrage (falls vorhanden)
+                string? bonus = null;
+                if (!string.IsNullOrWhiteSpace(rq.Content))
+                {
+                    var tokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(rq.Content);
+                    if (tokens != null && tokens.ContainsKey("Bonus"))
+                    {
+                        bonus = tokens["Bonus"];
+                    }
+                }
+
 
                 // Matchmaking: Check if another player is available in the queue
                 if (_battleQueue.TryPairPlayers(playerToken, bonus, out var opponent))
@@ -50,10 +61,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
                     {
                         try
                         {
-                            // Retrieve opponent bonus if applicable
-                            var opponentBonus = tokens.ContainsKey("OpponentBonus") ? tokens["OpponentBonus"] : null;
-
-                            // Start the battle
+                            // Battle starten
                             var (winner, loser) = _battleHandler.StartBattle(playerToken, opponent.Value.Token, bonus, opponent.Value.Bonus);
                             rs.SetJsonContentType();
                             rs.Content = JsonConvert.SerializeObject(new { Winner = winner, Loser = loser }, Formatting.Indented);
@@ -77,7 +85,6 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
                 return true;
             }
-
             return false;
         }
     }
