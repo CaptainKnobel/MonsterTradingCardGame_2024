@@ -63,7 +63,7 @@ namespace MonsterTradingCardGame_2024.Data_Access
                 {
                     Console.WriteLine($"Card {card.Id}, OwnerId: {card.OwnerId}");
                 }
-                //DeletePackageById(packageId);   // Remove it from the available list
+                DeletePackageById(packageId);   // Remove it from the available list
                 return cards;
             }
 
