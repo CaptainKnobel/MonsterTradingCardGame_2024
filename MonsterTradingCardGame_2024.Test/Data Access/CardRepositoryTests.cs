@@ -121,6 +121,7 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
         [Test]
         public void GetCardById_MonsterCard_ReturnsCorrectCard()
         {
+            // Arrange
             var user = CreateTestUser("testuser5", "password123");
             var card = new MonsterCard("Ork", 60, Element.Earth, Species.Ork, user.Id)
             {
@@ -129,11 +130,18 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             };
             _cardRepository.AddCard(card);
 
+            // Act
             var retrievedCard = _cardRepository.GetCardById(card.Id);
 
-            Assert.That(retrievedCard, Is.Not.Null);
-            Assert.That(retrievedCard, Is.InstanceOf<MonsterCard>());
-            Assert.That(((MonsterCard)retrievedCard!).MonsterSpecies, Is.EqualTo(Species.Ork));
+            // Assert
+            Assert.That(retrievedCard, Is.Not.Null, "Retrieved card should not be null");
+            Assert.That(retrievedCard, Is.InstanceOf<MonsterCard>(), "Retrieved card should be a MonsterCard");
+            Assert.That(retrievedCard?.Id, Is.EqualTo(card.Id), "Card ID should match");
+            Assert.That(retrievedCard?.Name, Is.EqualTo(card.Name), "Card Name should match");
+            Assert.That(retrievedCard?.Damage, Is.EqualTo(card.Damage), "Card Damage should match");
+            Assert.That(retrievedCard?.ElementType, Is.EqualTo(card.ElementType), "Card ElementType should match");
+            Assert.That(((MonsterCard)retrievedCard!).MonsterSpecies, Is.EqualTo(Species.Ork), "MonsterSpecies should match");
+            Assert.That(retrievedCard?.Locked, Is.EqualTo(card.Locked), "Locked status should match");
         }
 
         [Test]
