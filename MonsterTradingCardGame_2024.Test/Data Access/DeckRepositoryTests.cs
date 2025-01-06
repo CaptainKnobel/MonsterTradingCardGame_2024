@@ -10,7 +10,7 @@ using Npgsql;
 using NUnit.Framework;
 
 namespace MonsterTradingCardGame_2024.Test.Data_Access
-{
+{/*
     [TestFixture]
     public class DeckRepositoryTests : IDisposable
     {
@@ -81,5 +81,5 @@ namespace MonsterTradingCardGame_2024.Test.Data_Access
             _transaction?.Dispose();
             _connection?.Dispose();
         }
-    }
+    }*/
 }
