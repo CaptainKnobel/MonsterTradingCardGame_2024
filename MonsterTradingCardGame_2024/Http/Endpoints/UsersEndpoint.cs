@@ -79,6 +79,7 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
             string token = rq.Headers["Authorization"].Substring("Bearer ".Length);
             string requestedUsername = rq.Path[2];
 
+            // Find User by Token
             var requestingUser = _userHandler.FindUserByToken(token);
             if (requestingUser == null)
             {
@@ -88,16 +89,17 @@ namespace MonsterTradingCardGame_2024.Http.Endpoints
 
             Console.WriteLine($"Requesting UserName: {requestingUser.Username}");
             Console.WriteLine($"Requested UserName:  {requestedUsername}");
-            if (requestingUser.Username != requestedUsername)
-            {
-                rs.SetClientError("Forbidden - Cannot access another user's profile", 403);
-                return true;
-            }
-
             var user = _userHandler.GetUserByUsername(requestedUsername);
+            Console.WriteLine($"Database UserName:   {user?.Username}");
+
             if (user == null)
             {
                 rs.SetClientError("User not found", 404);
+                return true;
+            }
+            if (!requestingUser.Username.Equals(requestedUsername, StringComparison.OrdinalIgnoreCase))
+            {
+                rs.SetClientError("Forbidden - Cannot access another user's profile", 403);
                 return true;
             }
 
